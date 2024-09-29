@@ -1,0 +1,30 @@
+import dotenv from "dotenv"
+dotenv.config()
+import express from "express"
+import cookieParser from "cookie-parser"
+import { decrypt } from "./mw/decrypt"
+import { refresh } from "./mw/refresh"
+import { playlistController } from "./controller/playlistController"
+import { userController } from "./controller/userController"
+import { resolve } from "./mw/resolve"
+import { spotifyExt } from "../ext/spotifyExt/spotifyExt"
+
+const port = 3001
+const app = express()
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+
+app.use(decrypt)
+app.use(refresh(spotifyExt))
+
+app.use("/", userController)
+app.use("/", playlistController)
+// app.use("/", trackRoute);
+
+app.use(resolve)
+
+app.listen(port, () => {
+  console.log(`${port}번 포트로 서버 실행`)
+})

@@ -1,0 +1,46 @@
+{
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.5.4",
+    "@types/pg": "^8.11.8",
+    "drizzle-kit": "^0.24.2",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.6.2"
+  },
+  "scripts": {
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/infra/express/index.ts",
+    "build": "tsc",
+    "generate": "drizzle-kit generate --config=src/infra/drizzle/config.ts",
+    "push": " drizzle-kit push --config=src/infra/drizzle/config.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.654.0",
+    "@elastic/elasticsearch": "^8.15.0",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/multer": "^1.4.12",
+    "@types/node-schedule": "^2.1.7",
+    "@types/sanitize-html": "^2.13.0",
+    "cookie-parser": "^1.4.6",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.33.0",
+    "express": "^4.20.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nanoid": "^3.3.4",
+    "node-schedule": "^2.1.1",
+    "pg": "^8.12.0",
+    "sanitize-html": "^2.13.0",
+    "sharp": "^0.33.5",
+    "zod": "^3.23.8"
+  },
+  "name": "spotify-back",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
