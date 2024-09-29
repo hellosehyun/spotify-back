@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 
-interface DecodedToken {
+interface Token {
   id: number
   role: string
   accessToken: string
@@ -8,15 +8,15 @@ interface DecodedToken {
   expireAt: number
 }
 
-export const encryptToken = (params: DecodedToken): string => {
-  return jwt.sign(params, process.env.JWT_SECRET!, {
-    expiresIn: 60 * 60 * 24 * 7,
+export const encryptToken = (data: Token): string => {
+  return jwt.sign(data, process.env.JWT_SECRET!, {
+    expiresIn: 60 * 60 * 24 * 3,
   })
 }
 
-export const decryptToken = (token: string): DecodedToken => {
+export const decryptToken = (token: string): Token => {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken
+    return jwt.verify(token, process.env.JWT_SECRET!) as Token
   } catch (err) {
     throw err
   }

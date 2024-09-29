@@ -1,11 +1,11 @@
-type In = {}
+type In = void
 
 type Out = {
   url: string
 }
 
 export const oauth = () => ({
-  execute: (): Out => {
+  execute: (params: In): Out => {
     const searchParams = new URLSearchParams({
       client_id: process.env.SPOTIFY_OAUTH_CLIENT_ID!,
       redirect_uri: process.env.SPOTIFY_OAUTH_REDIRECT_URI!,

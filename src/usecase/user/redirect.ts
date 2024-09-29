@@ -1,10 +1,9 @@
 import { Country, Email, Img, Name, ProfileEid, ProfileEuri, Role } from "@/entity/user/vo"
 import { SpotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
 import { UserRepo } from "@/repo/userRepo/userRepo"
-import { encryptToken } from "@/shared/helper/jwt"
+import { decryptToken, encryptToken } from "@/shared/helper/jwt"
 import { BadRequest, InternalError } from "@/shared/static/exception"
 import { Id } from "@/shared/vo"
-import schema from "zod"
 
 type In = {
   code: any
@@ -17,6 +16,7 @@ type Out = Promise<{
   name: Name
   imgs: Img[]
   country: Country
+  accessToken: string
   token: string
 }>
 
@@ -24,7 +24,7 @@ export const redirect = (
   spotifyExt: SpotifyExt, //
   userRepo: UserRepo
 ) => ({
-  execute: async (params: In): Promise<Out> => {
+  execute: async (params: In): Out => {
     const dto1 = pre1(params)
 
     const res1 = await spotifyExt.getToken({
@@ -63,18 +63,17 @@ export const redirect = (
       name: user.name,
       imgs: user.imgs,
       country: user.country,
+      accessToken: spotifyToken.access_token,
       token,
     }
   },
 })
 
 const pre1 = (params: In) => {
-  return schema
-    .object({
-      code: schema.string(),
-      state: schema.string(),
-    })
-    .parse(params)
+  return {
+    code: params.code!,
+    state: params.state!,
+  }
 }
 
 const pre2 = (params: any) => {
