@@ -40,9 +40,7 @@ export const deleteItem = async (params: In, tx = db): Out => {
 
   query.where(and(...conditions))
 
-  const data = await query
-
-  console.log(data)
+  await query
 
   return
 }

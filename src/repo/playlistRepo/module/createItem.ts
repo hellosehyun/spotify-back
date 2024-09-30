@@ -25,7 +25,7 @@ type In = {
   }>[]
 }
 
-type Out = Promise<void>
+type Out = Promise<Id[]>
 
 export const createItem = async (params: In, tx = db): Out => {
   const sq =
@@ -47,27 +47,15 @@ export const createItem = async (params: In, tx = db): Out => {
         index: sql`(
           SELECT COALESCE(MAX("index"), -1) + 1 + ${index}
           FROM ${item}
-          WHERE playlist_id = ${sq}
+          WHERE playlist_id = ${sq} AND deleted_at IS NULL
         )`,
       }))
     )
     .returning()
 
-  const data = await query
+  const items = await query
 
-  console.log(data)
+  const ids = items.map((item) => Id.create(item.id))
 
-  // const entities = data.map((insertedItem) =>
-  //   Track.create({
-  //     playlistId: Id.create(insertedItem.playlistId),
-  //     id: Id.create(insertedItem.id),
-  //     createdAt: Timestamp.create(insertedItem.createdAt),
-  //     name: TrackName.create(insertedItem.name),
-  //     artists: insertedItem.artists,
-  //     album: insertedItem.album,
-  //     eid: Eid.create(insertedItem.eid),
-  //   })
-  // )
-
-  return
+  return ids
 }

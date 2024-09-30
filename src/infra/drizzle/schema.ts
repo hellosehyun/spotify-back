@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, varchar, jsonb, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, serial, integer, varchar, jsonb, timestamp, boolean } from "drizzle-orm/pg-core"
 
 export const user = pgTable("user", {
   id: serial("id").primaryKey().notNull(),
@@ -28,6 +28,7 @@ export const playlist = pgTable("playlist", {
   detail: varchar("detail").notNull(),
   type: varchar("type").notNull(),
   likeCnt: integer("like_cnt").notNull(),
+  isPublic: boolean("is_public").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" })
     .defaultNow()

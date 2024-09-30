@@ -1,32 +1,22 @@
 import { Id, Img, Timestamp } from "@/shared/vo"
-import { Detail, Title, Type } from "./vo"
+import { Detail, IsPublic, Title, Type } from "./vo"
 import { Track } from "../track/track"
-import { ArtistName, AlbumName } from "../track/vo"
-import { Eid } from "@/shared/vo"
+import { User } from "../user/user"
 
-export type Playlist<T = {}> = T & {
+export type Playlist<P = {}> = P & {
   id: Id
   imgs: Img[]
   type: Type
   title: Title
-  items: Track<{
-    id: Id
-    artists: {
-      name: ArtistName
-      eid: Eid
-    }[]
-    album: {
-      name: AlbumName
-      eid: Eid
-      imgs: Img[]
-    }
-  }>[]
+  items: Track<P extends { items: Track<infer T>[] } ? T : never>[]
   detail: Detail
+  isPublic: IsPublic
   createdAt: Timestamp
+  creator: User<P extends { creator: User<infer U> } ? U : never>
 }
 
 export const Playlist = {
-  create<T>(val: Partial<Playlist<T>>): Playlist<T> {
-    return val as Playlist<T>
+  create<P = {}>(val: Partial<Playlist<P>>): Playlist<P> {
+    return val as Playlist<P>
   },
 }

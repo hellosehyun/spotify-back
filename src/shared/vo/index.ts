@@ -1,6 +1,6 @@
 export { Cnt } from "./cnt"
 export { Img } from "./img"
-export { Page, createPage } from "./page"
+export { Page } from "./page"
 export { Id } from "./id"
 export { Eid } from "./eid"
 export { Timestamp } from "./timestamp"

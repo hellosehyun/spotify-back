@@ -1,5 +1,9 @@
-export type Page = number & { readonly __brand: unique symbol };
+import zod from "zod"
 
-export const createPage = (value: any): Page => {
-  return value as Page;
-};
+export type Page = number & { __brand: symbol }
+
+export const Page = {
+  create(val: any): Page {
+    return zod.coerce.number().int().positive().parse(val) as Page
+  },
+}
