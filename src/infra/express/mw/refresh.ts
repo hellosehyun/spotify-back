@@ -27,6 +27,7 @@ export const refresh =
         const newToken = encryptToken(newUser)
 
         req.user = newUser
+        res.cookie("accessToken", newUser.accessToken)
         res.cookie("token", newToken)
       }
 

@@ -3,6 +3,7 @@ dotenv.config()
 import express from "express"
 import cookieParser from "cookie-parser"
 import { decrypt } from "./mw/decrypt"
+import { log } from "./mw/log"
 import { refresh } from "./mw/refresh"
 import { resolve } from "./mw/resolve"
 import { spotifyExt } from "../ext/spotifyExt/spotifyExt"
@@ -17,6 +18,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
+app.use(log)
 app.use(decrypt)
 app.use(refresh(spotifyExt))
 
