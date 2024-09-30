@@ -10,6 +10,7 @@ import { spotifyExt } from "../ext/spotifyExt/spotifyExt"
 import { playlistController } from "./controller/playlistController"
 import { userController } from "./controller/userController"
 import { playerController } from "./controller/playerController"
+import { trackController } from "./controller/trackController"
 
 const port = 3001
 const app = express()
@@ -25,7 +26,7 @@ app.use(refresh(spotifyExt))
 app.use("/", userController)
 app.use("/", playlistController)
 app.use("/", playerController)
-// app.use("/", trackRoute);
+app.use("/", trackController)
 
 app.use(resolve)
 

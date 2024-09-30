@@ -8,8 +8,8 @@ const timezone = "Asia/Seoul"
 
 const header = [
   { id: "status", title: "Status" },
-  { id: "createdAt", title: "Created At" },
-  { id: "resTime", title: "Response Time" },
+  { id: "createdAt", title: "Created At (Seoul)" },
+  { id: "latency", title: "Latency (ms)" },
   { id: "url", title: "URL" },
   { id: "method", title: "Method" },
   { id: "userId", title: "User Id" },
@@ -24,7 +24,7 @@ export const log = async (originalReq: Request, res: Response, next: NextFunctio
 
   res.on("finish", async () => {
     try {
-      const resTime = Date.now() - startTime
+      const latency = Date.now() - startTime
       const logPath = getLogPath()
 
       fs.mkdirSync(logPath, { recursive: true })
@@ -32,7 +32,7 @@ export const log = async (originalReq: Request, res: Response, next: NextFunctio
       const row = {
         status: res.statusCode,
         createdAt: moment().tz(timezone).format("YYYY-MM-DD HH:mm:ss"),
-        resTime,
+        latency,
         url: req.url,
         method: req.method,
         userId: req.user?.id,

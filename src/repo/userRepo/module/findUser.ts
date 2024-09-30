@@ -6,17 +6,16 @@ import {
   FollowerCnt,
   Img,
   Name,
-  ProfileEid,
   ProfileEuri,
   Role,
 } from "@/entity/user/vo"
 import { db } from "@/infra/drizzle/db"
 import { user } from "@/infra/drizzle/schema"
-import { Id, Timestamp } from "@/shared/vo"
+import { Eid, Id, Timestamp } from "@/shared/vo"
 import { and, eq, SQL } from "drizzle-orm"
 
 type In = {
-  profileEid?: ProfileEid
+  profileEid?: Eid
   userId?: Id
 }
 
@@ -44,7 +43,7 @@ export const findUser = async (params: In): Out => {
     name: Name.create(data.name),
     email: Email.create(data.email),
     imgs: data.imgs!.map((img: any) => Img.create(img)),
-    profileEid: ProfileEid.create(data.profileEid),
+    profileEid: Eid.create(data.profileEid),
     profileEuri: ProfileEuri.create(data.profileEuri),
     country: Country.create(data.country),
   })

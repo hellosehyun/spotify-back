@@ -1,4 +1,11 @@
-import { BadRequest, Conflict, Forbidden, NotFound, Unauthorized } from "@/shared/static/exception"
+import {
+  BadGateway,
+  BadRequest,
+  Conflict,
+  Forbidden,
+  NotFound,
+  Unauthorized,
+} from "@/shared/static/exception"
 import { NextFunction, Request, Response } from "express"
 
 export const resolve = (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -9,6 +16,7 @@ export const resolve = (err: any, req: Request, res: Response, next: NextFunctio
   else if (err instanceof Forbidden) status = 403
   else if (err instanceof NotFound) status = 404
   else if (err instanceof Conflict) status = 409
+  else if (err instanceof BadGateway) status = 502
   else status = 500
 
   const message = err.message || "something broke..."

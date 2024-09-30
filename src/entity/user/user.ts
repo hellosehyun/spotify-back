@@ -1,15 +1,5 @@
-import { Id, Timestamp } from "@/shared/vo"
-import {
-  BannerImg,
-  FollowerCnt,
-  Img,
-  Role,
-  ProfileEid,
-  Name,
-  Email,
-  ProfileEuri,
-  Country,
-} from "./vo"
+import { Eid, Id, Timestamp } from "@/shared/vo"
+import { BannerImg, FollowerCnt, Img, Role, Name, Email, ProfileEuri, Country } from "./vo"
 
 export type User = {
   id: Id
@@ -18,7 +8,7 @@ export type User = {
   country: Country
   imgs: Img[]
   bannerImgs: BannerImg[]
-  profileEid: ProfileEid
+  profileEid: Eid
   profileEuri: ProfileEuri
   role: Role
   followerCnt: FollowerCnt

@@ -1,4 +1,5 @@
 export { Page, createPage } from "./page"
 export { Id } from "./id"
+export { Eid } from "./eid"
 export { Timestamp } from "./timestamp"
 export { Object, createObject } from "./object"

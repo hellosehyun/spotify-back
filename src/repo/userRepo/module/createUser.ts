@@ -6,16 +6,15 @@ import {
   FollowerCnt,
   Img,
   Name,
-  ProfileEid,
   ProfileEuri,
   Role,
 } from "@/entity/user/vo"
 import { db } from "@/infra/drizzle/db"
 import { user } from "@/infra/drizzle/schema"
-import { Id, Timestamp } from "@/shared/vo"
+import { Eid, Id, Timestamp } from "@/shared/vo"
 
 type In = {
-  profileEid: ProfileEid
+  profileEid: Eid
   profileEuri: ProfileEuri
   country: Country
   name: Name

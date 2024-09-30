@@ -1,9 +1,9 @@
-import { Country, Email, Img, Name, ProfileEid, ProfileEuri, Role } from "@/entity/user/vo"
+import { Country, Email, Img, Name, ProfileEuri, Role } from "@/entity/user/vo"
 import { SpotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
 import { UserRepo } from "@/repo/userRepo/userRepo"
-import { decryptToken, encryptToken } from "@/shared/helper/jwt"
+import { encryptToken } from "@/shared/helper/jwt"
 import { BadRequest, InternalError } from "@/shared/static/exception"
-import { Id } from "@/shared/vo"
+import { Eid, Id } from "@/shared/vo"
 
 type In = {
   code: any
@@ -43,7 +43,10 @@ export const redirect = (
     const dto2 = pre2(res2.data)
 
     let user = await userRepo.findUser({ profileEid: dto2.profileEid })
-    if (!user) user = await userRepo.createUser({ ...dto2 })
+    if (!user) {
+      user = await userRepo.createUser({ ...dto2 })
+      initUser()
+    }
 
     const token = encryptToken({
       id: user.id,
@@ -69,10 +72,16 @@ export const redirect = (
   },
 })
 
+const initUser = async () => {}
+
 const pre1 = (params: In) => {
-  return {
-    code: params.code!,
-    state: params.state!,
+  try {
+    return {
+      code: params.code!,
+      state: params.state!,
+    }
+  } catch (err) {
+    throw new BadRequest()
   }
 }
 
@@ -89,7 +98,7 @@ const pre2 = (params: any) => {
           height: img.height!,
         })
       ) as Img[],
-      profileEid: ProfileEid.create(params.id!),
+      profileEid: Eid.create(params.id!),
       email: Email.create(params.email!),
     }
   } catch (err) {

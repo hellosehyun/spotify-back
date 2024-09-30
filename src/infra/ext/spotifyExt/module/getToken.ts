@@ -29,8 +29,7 @@ export const getToken = async (params: In): Out => {
     headers: {
       "content-type": "application/x-www-form-urlencoded",
       Authorization: `Basic ${Buffer.from(
-        `${process.env.SPOTIFY_OAUTH_CLIENT_ID!}:${process.env
-          .SPOTIFY_OAUTH_CLIENT_SECRET!}`
+        `${process.env.SPOTIFY_OAUTH_CLIENT_ID!}:${process.env.SPOTIFY_OAUTH_CLIENT_SECRET!}`
       ).toString("base64")}`,
     },
     body: searchParams,
