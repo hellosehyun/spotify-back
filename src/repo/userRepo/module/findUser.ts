@@ -12,8 +12,8 @@ type In = {
 
 type Out = Promise<User | undefined>
 
-export const findUser = async (params: In): Out => {
-  const query = db.select().from(user)
+export const findUser = async (params: In, tx = db): Out => {
+  const query = tx.select().from(user)
 
   let conditions: SQL[] = []
   if (params.eid) conditions.push(eq(user.eid, params.eid))

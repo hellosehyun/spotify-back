@@ -3,11 +3,13 @@ import { createUser } from "./module/createUser"
 
 export interface UserRepo {
   findUser(
-    params: Parameters<typeof findUser>[0] //
+    params: Parameters<typeof findUser>[0], //
+    tx?: Parameters<typeof findUser>[1]
   ): ReturnType<typeof findUser>
 
   createUser(
-    params: Parameters<typeof createUser>[0] //
+    params: Parameters<typeof createUser>[0],
+    tx?: Parameters<typeof createUser>[1]
   ): ReturnType<typeof createUser>
 }
 

@@ -1,10 +1,11 @@
 import { getToken } from "./module/getToken"
 import { refreshToken } from "./module/refreshToken"
 import { getProfile } from "./module/getProfile"
-import { play } from "./module/play"
-import { like } from "./module/like"
-import { dislike } from "./module/dislike"
+import { playTrack } from "./module/playTrack"
+import { likeTracks } from "./module/likeTracks"
+import { dislikeTracks } from "./module/dislikeTracks"
 import { getLikeTracks } from "./module/getLikeTracks"
+import { getTracks } from "./module/getTracks"
 
 export interface SpotifyExt {
   getToken(
@@ -23,25 +24,30 @@ export interface SpotifyExt {
     params: Parameters<typeof getProfile>[0] //
   ): ReturnType<typeof getProfile>
 
-  play(
-    params: Parameters<typeof play>[0] //
-  ): ReturnType<typeof play>
+  playTrack(
+    params: Parameters<typeof playTrack>[0] //
+  ): ReturnType<typeof playTrack>
 
-  like(
-    params: Parameters<typeof like>[0] //
-  ): ReturnType<typeof like>
+  likeTracks(
+    params: Parameters<typeof likeTracks>[0] //
+  ): ReturnType<typeof likeTracks>
 
-  dislike(
-    params: Parameters<typeof dislike>[0] //
-  ): ReturnType<typeof dislike>
+  dislikeTracks(
+    params: Parameters<typeof dislikeTracks>[0] //
+  ): ReturnType<typeof dislikeTracks>
+
+  getTracks(
+    params: Parameters<typeof getTracks>[0] //
+  ): ReturnType<typeof getTracks>
 }
 
 export const spotifyExt: SpotifyExt = {
   getToken,
   refreshToken,
   getProfile,
-  play,
-  like,
-  dislike,
+  playTrack,
+  likeTracks,
+  dislikeTracks,
   getLikeTracks,
+  getTracks,
 }

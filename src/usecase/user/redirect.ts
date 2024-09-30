@@ -1,5 +1,6 @@
 import { Type } from "@/entity/playlist/vo"
 import { Country, Email, Name, Role } from "@/entity/user/vo"
+import { db } from "@/infra/drizzle/db"
 import { SpotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
 import { PlaylistRepo } from "@/repo/playlistRepo/playlistRepo"
 import { UserRepo } from "@/repo/userRepo/userRepo"
@@ -47,16 +48,19 @@ export const redirect = (
 
     let user = await userRepo.findUser({ eid: dto2.eid })
     if (!user) {
-      user = await userRepo.createUser({ ...dto2 })
       const res3 = await spotifyExt.getLikeTracks({ accessToken: spotifyToken.access_token })
       if (!res3.ok) throw new BadGateway()
 
       const items = res3.data!
 
-      await playlistRepo.createPlaylist({
-        craetorId: user.id,
-        type: Type.create("like"),
-        items,
+      user = await db.transaction(async (tx) => {
+        const user = await userRepo.createUser({ ...dto2 }, tx)
+        await playlistRepo.createPlaylist(
+          { craetorId: user.id, type: Type.create("like"), items },
+          tx
+        )
+
+        return user
       })
     }
 

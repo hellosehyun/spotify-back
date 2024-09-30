@@ -5,6 +5,7 @@ import { AlbumName, ArtistName, TrackName } from "@/entity/track/vo"
 import { db } from "@/infra/drizzle/db"
 import { item, playlist as playlistTable } from "@/infra/drizzle/schema"
 import { Eid, Id, Img, Timestamp } from "@/shared/vo"
+import { sql } from "drizzle-orm"
 
 type In = {
   craetorId: Id
@@ -49,38 +50,36 @@ type Out = Promise<
   }>
 >
 
-export const createPlaylist = async (params: In): Out => {
-  const query = db.transaction(async (tx) => {
-    const [playlist] = await tx
-      .insert(playlistTable)
-      .values({
-        creatorId: params.craetorId,
-        imgs: [],
-        title: params.type === "like" ? "Liked Tracks" : "Untitled",
-        detail: "...",
-        type: params.type,
-        likeCnt: 0,
-      })
-      .returning()
+export const createPlaylist = async (params: In, tx = db): Out => {
+  const [playlist] = await tx
+    .insert(playlistTable)
+    .values({
+      creatorId: params.craetorId,
+      imgs: [],
+      title: params.type === "like" ? "Liked Tracks" : "Untitled",
+      detail: "...",
+      type: params.type,
+      likeCnt: 0,
+    })
+    .returning()
 
-    const items = await tx
-      .insert(item)
-      .values(
-        params.items.map((item: any, index) => ({
-          playlistId: playlist.id,
-          name: item.name,
-          artists: item.artists,
-          album: item.album,
-          index,
-          eid: item.eid,
-        }))
-      )
-      .returning()
-
-    return { playlist, items }
-  })
-
-  const { playlist, items } = await query
+  const items = await tx
+    .insert(item)
+    .values(
+      params.items.map((item, index) => ({
+        playlistId: playlist.id,
+        name: item.name,
+        artists: item.artists,
+        album: item.album,
+        eid: item.eid,
+        index: sql`(
+            SELECT COALESCE(MAX("index"), -1) + 1
+            FROM item
+            WHERE playlist_id = ${playlist.id}
+          ) + ${index}`,
+      }))
+    )
+    .returning()
 
   const entity = Playlist.create({
     id: Id.create(playlist.id),

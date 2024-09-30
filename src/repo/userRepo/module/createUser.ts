@@ -14,8 +14,8 @@ type In = {
 
 type Out = Promise<User>
 
-export const createUser = async (params: In): Out => {
-  const query = db
+export const createUser = async (params: In, tx = db): Out => {
+  const query = tx
     .insert(user)
     .values({
       name: params.name,

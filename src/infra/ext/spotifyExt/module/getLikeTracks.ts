@@ -72,26 +72,27 @@ const api = async (accessToken: string, limit: number, offset: number) => {
 
 const map = async (items: Item[]) => {
   return await Promise.all(
-    items.map(async ({ track }) =>
-      Track.create({
-        artists: track.artists.map((artist) => ({
-          name: ArtistName.create(artist.name),
-          eid: Eid.create(artist.id),
-        })),
-        album: {
-          imgs: track.album.images.map((image) =>
-            Img.create({
-              width: image.width,
-              height: image.height,
-              url: image.url,
-            })
-          ),
-          name: AlbumName.create(track.album.name),
-          eid: Eid.create(track.album.id),
-        },
-        name: TrackName.create(track.name),
-        eid: Eid.create(track.id),
-      })
+    items.map(
+      async ({ track }) =>
+        await Track.create({
+          artists: track.artists.map((artist) => ({
+            name: ArtistName.create(artist.name),
+            eid: Eid.create(artist.id),
+          })),
+          album: {
+            imgs: track.album.images.map((image) =>
+              Img.create({
+                width: image.width,
+                height: image.height,
+                url: image.url,
+              })
+            ),
+            name: AlbumName.create(track.album.name),
+            eid: Eid.create(track.album.id),
+          },
+          name: TrackName.create(track.name),
+          eid: Eid.create(track.id),
+        })
     )
   )
 }
