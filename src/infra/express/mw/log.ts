@@ -9,9 +9,9 @@ const timezone = "Asia/Seoul"
 const header = [
   { id: "status", title: "Status" },
   { id: "createdAt", title: "Created At (Seoul)" },
-  { id: "latency", title: "Latency (ms)" },
-  { id: "url", title: "URL" },
   { id: "method", title: "Method" },
+  { id: "url", title: "URL" },
+  { id: "latency", title: "Latency (ms)" },
   { id: "userId", title: "User Id" },
   { id: "query", title: "Request Query" },
   { id: "params", title: "Request Params" },
