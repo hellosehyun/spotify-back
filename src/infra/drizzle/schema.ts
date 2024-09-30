@@ -7,8 +7,7 @@ export const user = pgTable("user", {
   country: varchar("country").notNull(),
   imgs: jsonb("imgs").array().notNull(),
   bannerImgs: jsonb("banner_imgs").array().notNull(),
-  profileEid: varchar("profile_eid").unique().notNull(),
-  profileEuri: varchar("profile_euri").unique().notNull(),
+  eid: varchar("eid").unique().notNull(),
   role: varchar("role").notNull(),
   followerCnt: integer("follower_cnt").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
@@ -21,8 +20,32 @@ export const user = pgTable("user", {
 
 export const playlist = pgTable("playlist", {
   id: serial("id").primaryKey().notNull(),
-  creatorId: integer("creator_id"),
-  playlistEid: varchar("playlist_eid").notNull(),
+  creatorId: integer("creator_id")
+    .references(() => user.id)
+    .notNull(),
+  imgs: jsonb("imgs").array().notNull(),
+  title: varchar("title").notNull(),
+  detail: varchar("detail").notNull(),
+  type: varchar("type").notNull(),
+  likeCnt: integer("like_cnt").notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+  deletedAt: timestamp("deleted_at", { mode: "date" }),
+})
+
+export const item = pgTable("item", {
+  id: serial("id").primaryKey().notNull(),
+  playlistId: integer("playlist_id")
+    .references(() => playlist.id)
+    .notNull(),
+  index: integer("index").notNull(),
+  artists: jsonb("artists").array().notNull(),
+  album: jsonb("album").notNull(),
+  name: varchar("name").notNull(),
+  eid: varchar("eid").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" })
     .defaultNow()

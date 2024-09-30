@@ -4,6 +4,7 @@ import { oauth } from "@/usecase/user/oauth"
 import { redirect } from "@/usecase/user/redirect"
 import { spotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
 import { userRepo } from "@/repo/userRepo/userRepo"
+import { playlistRepo } from "@/repo/playlistRepo/playlistRepo"
 
 export const userController = express.Router()
 
@@ -26,11 +27,20 @@ userController.get(
     try {
       const result = await redirect(
         spotifyExt, //
-        userRepo
+        userRepo,
+        playlistRepo
       ).execute({
         code: req.query?.code,
         state: req.query?.state,
       })
+
+      res.cookie("id", result.id)
+      res.cookie("name", result.name)
+      res.cookie("role", result.role)
+      res.cookie("imgs", result.imgs)
+      res.cookie("country", result.country)
+      res.cookie("accessToken", result.accessToken)
+      res.cookie("token", result.token)
 
       return res.status(200).json(result)
     } catch (err) {

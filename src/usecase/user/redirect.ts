@@ -1,9 +1,11 @@
-import { Country, Email, Img, Name, ProfileEuri, Role } from "@/entity/user/vo"
+import { Type } from "@/entity/playlist/vo"
+import { Country, Email, Name, Role } from "@/entity/user/vo"
 import { SpotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
+import { PlaylistRepo } from "@/repo/playlistRepo/playlistRepo"
 import { UserRepo } from "@/repo/userRepo/userRepo"
 import { encryptToken } from "@/shared/helper/jwt"
-import { BadRequest, InternalError } from "@/shared/static/exception"
-import { Eid, Id } from "@/shared/vo"
+import { BadGateway, BadRequest } from "@/shared/static/exception"
+import { Eid, Id, Img } from "@/shared/vo"
 
 type In = {
   code: any
@@ -22,7 +24,8 @@ type Out = Promise<{
 
 export const redirect = (
   spotifyExt: SpotifyExt, //
-  userRepo: UserRepo
+  userRepo: UserRepo,
+  playlistRepo: PlaylistRepo
 ) => ({
   execute: async (params: In): Out => {
     const dto1 = pre1(params)
@@ -31,21 +34,30 @@ export const redirect = (
       code: dto1.code,
       state: dto1.state,
     })
-    if (!res1.ok) throw new InternalError()
+    if (!res1.ok) throw new BadGateway()
 
     const spotifyToken = res1.data!
 
     const res2 = await spotifyExt.getProfile({
       accessToken: spotifyToken.access_token,
     })
-    if (!res2.ok) throw new InternalError()
+    if (!res2.ok) throw new BadGateway()
 
     const dto2 = pre2(res2.data)
 
-    let user = await userRepo.findUser({ profileEid: dto2.profileEid })
+    let user = await userRepo.findUser({ eid: dto2.eid })
     if (!user) {
       user = await userRepo.createUser({ ...dto2 })
-      initUser()
+      const res3 = await spotifyExt.getLikeTracks({ accessToken: spotifyToken.access_token })
+      if (!res3.ok) throw new BadGateway()
+
+      const items = res3.data!
+
+      await playlistRepo.createPlaylist({
+        craetorId: user.id,
+        type: Type.create("like"),
+        items,
+      })
     }
 
     const token = encryptToken({
@@ -72,8 +84,6 @@ export const redirect = (
   },
 })
 
-const initUser = async () => {}
-
 const pre1 = (params: In) => {
   try {
     return {
@@ -89,7 +99,6 @@ const pre2 = (params: any) => {
   try {
     return {
       name: Name.create(params.display_name!),
-      profileEuri: ProfileEuri.create(params.uri!),
       country: Country.create(params.country!),
       imgs: params.images!.map((img: any) =>
         Img.create({
@@ -98,7 +107,7 @@ const pre2 = (params: any) => {
           height: img.height!,
         })
       ) as Img[],
-      profileEid: Eid.create(params.id!),
+      eid: Eid.create(params.id!),
       email: Email.create(params.email!),
     }
   } catch (err) {

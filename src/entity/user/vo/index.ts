@@ -1,8 +1,5 @@
 export { Email } from "./email"
 export { Name } from "./name"
 export { BannerImg } from "./bannerImg"
-export { FollowerCnt } from "./followerCnt"
-export { Img } from "./img"
 export { Role } from "./role"
-export { ProfileEuri } from "./profileEuri"
 export { Country } from "./country"

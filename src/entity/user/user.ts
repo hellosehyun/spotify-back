@@ -1,22 +1,21 @@
-import { Eid, Id, Timestamp } from "@/shared/vo"
-import { BannerImg, FollowerCnt, Img, Role, Name, Email, ProfileEuri, Country } from "./vo"
+import { Cnt, Eid, Id, Img, Timestamp } from "@/shared/vo"
+import { BannerImg, Role, Name, Email, Country } from "./vo"
 
-export type User = {
+export type User<T = {}> = T & {
   id: Id
   name: Name
   email: Email
   country: Country
   imgs: Img[]
   bannerImgs: BannerImg[]
-  profileEid: Eid
-  profileEuri: ProfileEuri
+  eid: Eid
   role: Role
-  followerCnt: FollowerCnt
+  followerCnt: Cnt
   createdAt: Timestamp
 }
 
 export const User = {
-  create(val: User) {
-    return val as User
+  create<T>(val: Partial<User<T>>): User<T> {
+    return val as User<T>
   },
 }

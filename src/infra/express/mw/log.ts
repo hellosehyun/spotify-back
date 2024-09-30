@@ -18,8 +18,7 @@ const header = [
   { id: "body", title: "Request Body" },
 ]
 
-export const log = async (originalReq: Request, res: Response, next: NextFunction) => {
-  const req = { ...originalReq }
+export const log = async (req: Request, res: Response, next: NextFunction) => {
   const startTime = Date.now()
 
   res.on("finish", async () => {
