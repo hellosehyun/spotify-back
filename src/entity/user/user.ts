@@ -1,13 +1,13 @@
-import { Cnt, Eid, Id, Img, Timestamp } from "@/shared/vo"
-import { BannerImg, Role, Name, Email, Country } from "./vo"
+import { Cnt, Eid, Id, Imgs, Timestamp } from "@/shared/vo"
+import { BannerImgs, Role, Name, Email, Country } from "./vo"
 
 export type User<T = {}> = T & {
   id: Id
   name: Name
   email: Email
   country: Country
-  imgs: Img[]
-  bannerImgs: BannerImg[]
+  imgs: Imgs
+  bannerImgs: BannerImgs
   eid: Eid
   role: Role
   followerCnt: Cnt

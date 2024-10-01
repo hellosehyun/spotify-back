@@ -1,14 +1,14 @@
-import { Id, Img, Timestamp } from "@/shared/vo"
+import { Id, Imgs, Timestamp } from "@/shared/vo"
 import { Detail, IsPublic, Title, Type } from "./vo"
-import { Track } from "../track/track"
 import { User } from "../user/user"
+import { Item } from "../item/item"
 
 export type Playlist<P = {}> = P & {
   id: Id
-  imgs: Img[]
+  imgs: Imgs[]
   type: Type
   title: Title
-  items: Track<P extends { items: Track<infer T>[] } ? T : never>[]
+  items: Item<P extends { items: Item<infer I>[] } ? I : never>[]
   detail: Detail
   isPublic: IsPublic
   createdAt: Timestamp

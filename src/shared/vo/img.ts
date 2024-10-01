@@ -1,7 +1,7 @@
-export type Img = object & { __brand: symbol }
+export type Imgs = object & { __brand: symbol }
 
-export const Img = {
-  create(val: any): Img {
-    return val as Img
+export const Imgs = {
+  create(val: any): Imgs {
+    return val as Imgs
   },
 }
