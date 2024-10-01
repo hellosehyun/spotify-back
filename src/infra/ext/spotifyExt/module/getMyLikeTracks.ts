@@ -1,6 +1,4 @@
-import { Track } from "@/entity/track/track"
-import { TrackName, ArtistName, AlbumName } from "@/entity/track/vo"
-import { Eid, Img } from "@/shared/vo"
+import { Track } from "@/entity/item/vo"
 
 type In = {
   accessToken: string
@@ -9,22 +7,10 @@ type In = {
 type Out = Promise<{
   ok: boolean
   status: number
-  data?: Track<{
-    artists: {
-      name: ArtistName
-      eid: Eid
-    }[]
-    album: {
-      imgs: Img[]
-      name: AlbumName
-      eid: Eid
-    }
-    name: TrackName
-    eid: Eid
-  }>[]
+  data?: Track[]
 }>
 
-export const getLikeTracks = async ({ accessToken }: In): Out => {
+export const getMyLikeTracks = async ({ accessToken }: In): Out => {
   const limit = 25
   const res = await api(accessToken, limit, 0).then(async (res1) => {
     if (!res1.ok) return res1
@@ -75,23 +61,21 @@ const map = async (items: Item[]) => {
     items.map(
       async ({ track }) =>
         await Track.create({
-          artists: track.artists.map((artist) => ({
-            name: ArtistName.create(artist.name),
-            eid: Eid.create(artist.id),
+          artists: track.artists.map((artist: any) => ({
+            name: artist.name,
+            eid: artist.id,
           })),
           album: {
-            imgs: track.album.images.map((image) =>
-              Img.create({
-                width: image.width,
-                height: image.height,
-                url: image.url,
-              })
-            ),
-            name: AlbumName.create(track.album.name),
-            eid: Eid.create(track.album.id),
+            imgs: track.album.images.map((image: any) => ({
+              width: image.width,
+              height: image.height,
+              url: image.url,
+            })),
+            name: track.album.name,
+            eid: track.album.id,
           },
-          name: TrackName.create(track.name),
-          eid: Eid.create(track.id),
+          name: track.name,
+          eid: track.id,
         })
     )
   )

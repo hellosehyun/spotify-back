@@ -1,6 +1,5 @@
-import { Track } from "@/entity/track/track"
-import { AlbumName, ArtistName, TrackName } from "@/entity/track/vo"
-import { Eid, Img } from "@/shared/vo"
+import { Track } from "@/entity/item/vo"
+import { Eid } from "@/shared/vo"
 
 type In = {
   accessToken: string
@@ -38,22 +37,20 @@ const map = async (tracks: any) => {
       async (track: any) =>
         await Track.create({
           artists: track.artists.map((artist: any) => ({
-            name: ArtistName.create(artist.name),
-            eid: Eid.create(artist.id),
+            name: artist.name,
+            eid: artist.id,
           })),
           album: {
-            imgs: track.album.images.map((image: any) =>
-              Img.create({
-                width: image.width,
-                height: image.height,
-                url: image.url,
-              })
-            ),
-            name: AlbumName.create(track.album.name),
-            eid: Eid.create(track.album.id),
+            imgs: track.album.images.map((image: any) => ({
+              width: image.width,
+              height: image.height,
+              url: image.url,
+            })),
+            name: track.album.name,
+            eid: track.album.id,
           },
-          name: TrackName.create(track.name),
-          eid: Eid.create(track.id),
+          name: track.name,
+          eid: track.id,
         })
     )
   )
