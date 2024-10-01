@@ -4,18 +4,21 @@ import { Id } from "@/shared/vo"
 import { and, eq, isNull } from "drizzle-orm"
 
 type In = {
-  playlistId: Id
+  userId: Id
 }
 type Out = Promise<{}>
 
-export const getPlaylist = async (params: In, tx = db): Out => {
+export const getMyLikePlaylistId = async (params: In, tx = db): Out => {
   const q = tx
-    .select()
+    .select({
+      creatorId: playlist.creatorId,
+    })
     .from(playlist)
     .where(
       and(
         isNull(playlist.deletedAt), //
-        eq(playlist.id, params.playlistId)
+        eq(playlist.creatorId, params.userId),
+        eq(playlist.type, "like")
       )
     )
 

@@ -1,54 +1,28 @@
-import { Type } from "@/entity/playlist/vo"
-import { Track } from "@/entity/track/track"
-import { AlbumName, ArtistName, TrackName } from "@/entity/track/vo"
 import { db } from "@/infra/drizzle/db"
-import { item, playlist as playlistTable } from "@/infra/drizzle/schema"
-import { Eid, Id, Img } from "@/shared/vo"
+import { playlist } from "@/infra/drizzle/schema"
+import { Id } from "@/shared/vo"
 
 type In = {
-  craetorId: Id
-  type: Type
-  items: Track<{
-    artists: {
-      name: ArtistName
-      eid: Eid
-    }[]
-    album: {
-      imgs: Img[]
-      name: AlbumName
-      eid: Eid
-    }
-    name: TrackName
-    eid: Eid
-  }>[]
+  userId: Id
+  title: string
+  type: string
 }
-
-type Out = Promise<Id>
+type Out = Promise<{}>
 
 export const createPlaylist = async (params: In, tx = db): Out => {
-  const [playlist] = await tx
-    .insert(playlistTable)
+  const q = tx
+    .insert(playlist)
     .values({
-      creatorId: params.craetorId,
-      imgs: [],
-      title: params.type === "like" ? "Liked Tracks" : "Untitled",
-      detail: "...",
+      creatorId: params.userId,
+      title: params.title,
       type: params.type,
+      detail: "",
+      imgs: [],
       isPublic: true,
-      likeCnt: 0,
     })
     .returning()
 
-  await tx.insert(item).values(
-    params.items.map((item, index) => ({
-      playlistId: playlist.id,
-      name: item.name,
-      artists: item.artists,
-      album: item.album,
-      eid: item.eid,
-      index: params.items.length - index - 1,
-    }))
-  )
+  const [row] = await q.execute()
 
-  return Id.create(playlist.id)
+  return {}
 }

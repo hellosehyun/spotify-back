@@ -8,9 +8,11 @@ type In = {
 }
 type Out = Promise<{}>
 
-export const getPlaylist = async (params: In, tx = db): Out => {
+export const getCreatorId = async (params: In, tx = db): Out => {
   const q = tx
-    .select()
+    .select({
+      creatorId: playlist.creatorId,
+    })
     .from(playlist)
     .where(
       and(
