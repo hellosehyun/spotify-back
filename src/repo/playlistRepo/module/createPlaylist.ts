@@ -1,11 +1,12 @@
+import { Title, Type } from "@/entity/playlist/vo"
 import { db } from "@/infra/drizzle/db"
 import { playlist } from "@/infra/drizzle/schema"
 import { Id } from "@/shared/vo"
 
 type In = {
   userId: Id
-  title: string
-  type: string
+  title: Title
+  type: Type
 }
 type Out = Promise<{}>
 

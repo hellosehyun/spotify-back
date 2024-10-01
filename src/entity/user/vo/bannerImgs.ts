@@ -1,4 +1,4 @@
-export type BannerImgs = object & { __brand: symbol }
+export type BannerImgs = object[] & { __brand: symbol }
 
 export const BannerImgs = {
   create(val: any): BannerImgs {

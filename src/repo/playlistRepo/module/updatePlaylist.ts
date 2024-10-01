@@ -1,11 +1,11 @@
 import { db } from "@/infra/drizzle/db"
-import { item, playlist } from "@/infra/drizzle/schema"
-import { Id, Img } from "@/shared/vo"
+import { playlist } from "@/infra/drizzle/schema"
+import { Id, Imgs } from "@/shared/vo"
 import { and, isNull, eq } from "drizzle-orm"
 
 type In = {
   playlistId: Id
-  imgs?: any
+  imgs?: Imgs
 }
 type Out = Promise<{}>
 

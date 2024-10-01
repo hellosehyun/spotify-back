@@ -1,3 +1,4 @@
+import { Track } from "@/entity/item/vo"
 import { db } from "@/infra/drizzle/db"
 import { item } from "@/infra/drizzle/schema"
 import { Eid, Id } from "@/shared/vo"
@@ -6,8 +7,10 @@ import { and, eq, isNull, sql } from "drizzle-orm"
 type In = {
   userId: Id
   playlistId: Id
-  eid: Eid
-  tracks: any[]
+  items: {
+    eid: Eid
+    track: Track
+  }[]
 }
 type Out = Promise<{}>
 
@@ -20,10 +23,10 @@ export const createItems = async (params: In, tx = db): Out => {
   const q = tx
     .insert(item)
     .values(
-      params.tracks.map((track, index) => ({
+      params.items.map(({ eid, track }, index) => ({
         playlistId: params.playlistId,
         order: sql`(${sq}) + ${index + 1}`,
-        eid: track.eid,
+        eid: eid,
         track: track,
       }))
     )
