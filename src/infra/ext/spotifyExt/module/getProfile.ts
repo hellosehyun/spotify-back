@@ -18,15 +18,17 @@ type Out = Promise<{
     | undefined
 }>
 
-export const getProfile = async (params: In): Out => {
-  const rawResponse = await fetch("https://api.spotify.com/v1/me", {
+export const getProfile = async (arg: In): Out => {
+  const res = await fetch("https://api.spotify.com/v1/me", {
     method: "GET",
-    headers: { Authorization: `Bearer ${params.accessToken}` },
+    headers: {
+      Authorization: `Bearer ${arg.accessToken}`,
+    },
   })
 
   return {
-    status: rawResponse.status,
-    ok: rawResponse.ok,
-    data: rawResponse.ok ? await rawResponse.json() : undefined,
+    status: res.status,
+    ok: res.ok,
+    data: res.ok ? await res.json() : undefined,
   }
 }

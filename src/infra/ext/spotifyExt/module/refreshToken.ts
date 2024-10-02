@@ -16,7 +16,7 @@ type Out = Promise<{
 }>
 
 export const refreshToken = async (params: In): Out => {
-  const searchParams = new URLSearchParams({
+  const sp = new URLSearchParams({
     refresh_token: params.refreshToken,
     grant_type: "refresh_token",
   })
@@ -26,11 +26,10 @@ export const refreshToken = async (params: In): Out => {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       Authorization: `Basic ${Buffer.from(
-        `${process.env.SPOTIFY_OAUTH_CLIENT_ID!}:${process.env
-          .SPOTIFY_OAUTH_CLIENT_SECRET!}`
+        `${process.env.SPOTIFY_OAUTH_CLIENT_ID!}:${process.env.SPOTIFY_OAUTH_CLIENT_SECRET!}`
       ).toString("base64")}`,
     },
-    body: searchParams,
+    body: sp,
   })
 
   return {

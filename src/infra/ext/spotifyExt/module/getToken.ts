@@ -17,9 +17,9 @@ type Out = Promise<{
       }
 }>
 
-export const getToken = async (params: In): Out => {
-  const searchParams = new URLSearchParams({
-    code: params.code,
+export const getToken = async (arg: In): Out => {
+  const sp = new URLSearchParams({
+    code: arg.code,
     redirect_uri: process.env.SPOTIFY_OAUTH_REDIRECT_URI!,
     grant_type: "authorization_code",
   })
@@ -32,7 +32,7 @@ export const getToken = async (params: In): Out => {
         `${process.env.SPOTIFY_OAUTH_CLIENT_ID!}:${process.env.SPOTIFY_OAUTH_CLIENT_SECRET!}`
       ).toString("base64")}`,
     },
-    body: searchParams,
+    body: sp,
   })
 
   return {

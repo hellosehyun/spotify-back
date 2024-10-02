@@ -2,8 +2,8 @@ import { Type } from "@/entity/playlist/vo"
 import { Country, Email, Name, Role } from "@/entity/user/vo"
 import { db } from "@/infra/drizzle/db"
 import { SpotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
-import { PlaylistRepo } from "@/repo/playlistRepo/playlistRepo"
-import { UserRepo } from "@/repo/userRepo/userRepo"
+import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
+import { UserRepo } from "@/repo/user/userRepo"
 import { encryptToken } from "@/shared/helper/jwt"
 import { BadGateway, BadRequest } from "@/shared/static/exception"
 import { Eid, Id, Img } from "@/shared/vo"
@@ -17,7 +17,7 @@ type Out = Promise<{
   id: Id
   role: Role
   name: Name
-  imgs: Img[]
+  img: Img
   country: Country
   accessToken: string
   token: string
@@ -28,38 +28,32 @@ export const redirect = (
   userRepo: UserRepo,
   playlistRepo: PlaylistRepo
 ) => ({
-  execute: async (params: In): Out => {
-    const dto1 = pre1(params)
+  execute: async (arg: In): Out => {
+    const dto1 = pre1(arg)
 
-    const res1 = await spotifyExt.getToken({
-      code: dto1.code,
-      state: dto1.state,
-    })
+    const res1 = await spotifyExt.getToken({ code: dto1.code, state: dto1.state })
     if (!res1.ok) throw new BadGateway()
 
     const spotifyToken = res1.data!
 
-    const res2 = await spotifyExt.getProfile({
-      accessToken: spotifyToken.access_token,
-    })
+    const res2 = await spotifyExt.getProfile({ accessToken: spotifyToken.access_token })
     if (!res2.ok) throw new BadGateway()
 
-    const dto2 = pre2(res2.data)
+    const dto2 = pre2(res2.data!)
 
     let user = await userRepo.findUser({ eid: dto2.eid })
-    if (!user) {
-      const res3 = await spotifyExt.getLikeTracks({ accessToken: spotifyToken.access_token })
+    if (user === undefined) {
+      const res3 = await spotifyExt.getMyLikeTracks({ accessToken: spotifyToken.access_token })
       if (!res3.ok) throw new BadGateway()
 
-      const items = res3.data!
+      const myLiketracks = res3.data!
+      const type = Type("like")
+      const name = Name("좋아요 표시한 곡")
 
       user = await db.transaction(async (tx) => {
-        const user = await userRepo.createUser({ ...dto2 }, tx)
-        await playlistRepo.createPlaylist(
-          { craetorId: user.id, type: Type.create("like"), items },
-          tx
-        )
-
+        const user = await userRepo.createUser(dto2, tx)
+        const playlist = await playlistRepo.createPlaylist({ creatorId: user.id, name, type }, tx)
+        await playlistRepo.createItems({ playlistId: playlist.id, tracks: myLiketracks }, tx)
         return user
       })
     }
@@ -72,15 +66,11 @@ export const redirect = (
       expireAt: Date.now() + spotifyToken.expires_in * 1000,
     })
 
-    console.log(user, "\n")
-    console.log(spotifyToken.access_token, "\n")
-    console.log(`token=${token}\n`)
-
     return {
       id: user.id,
       role: user.role,
       name: user.name,
-      imgs: user.imgs,
+      img: user.img,
       country: user.country,
       accessToken: spotifyToken.access_token,
       token,
@@ -88,31 +78,31 @@ export const redirect = (
   },
 })
 
-const pre1 = (params: In) => {
+const pre1 = (arg: In) => {
   try {
     return {
-      code: params.code!,
-      state: params.state!,
+      code: arg.code!,
+      state: arg.state!,
     }
   } catch (err) {
     throw new BadRequest()
   }
 }
 
-const pre2 = (params: any) => {
+const pre2 = (arg: any) => {
   try {
     return {
-      name: Name.create(params.display_name!),
-      country: Country.create(params.country!),
-      imgs: params.images!.map((img: any) =>
-        Img.create({
+      name: Name(arg.display_name!),
+      country: Country(arg.country!),
+      img: arg.images!.map((img: any) =>
+        Img({
           url: img.url!,
           width: img.width!,
           height: img.height!,
         })
-      ) as Img[],
-      eid: Eid.create(params.id!),
-      email: Email.create(params.email!),
+      ),
+      eid: Eid(arg.id!),
+      email: Email(arg.email!),
     }
   } catch (err) {
     throw new BadRequest()

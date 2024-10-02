@@ -10,14 +10,14 @@ type Out = Promise<{
   status: number
 }>
 
-export const likeTracks = async (params: In): Out => {
+export const likeTracks = async (arg: In): Out => {
   const res = await fetch("https://api.spotify.com/v1/me/tracks", {
     method: "PUT",
     headers: {
-      Authorization: `Bearer ${params.accessToken}`,
+      Authorization: `Bearer ${arg.accessToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ids: params.eids }),
+    body: JSON.stringify({ ids: arg.eids }),
   })
 
   return {

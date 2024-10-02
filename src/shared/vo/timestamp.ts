@@ -1,7 +1,5 @@
-export type Timestamp = string | (Date & { __brand: symbol })
+export type Timestamp = Date & { __brand: symbol }
 
-export const Timestamp = {
-  create(val: any): Timestamp {
-    return val as Timestamp
-  },
+export const Timestamp = (val: any): Timestamp => {
+  return val as Timestamp
 }

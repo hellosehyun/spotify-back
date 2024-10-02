@@ -1,16 +1,14 @@
-import { Id, Timestamp } from "@/shared/vo"
-import { Order, Track } from "./vo"
+import { Id, Timestamp, Track } from "@/shared/vo"
+import { Idx } from "./vo"
 
 export type Item<T> = T & {
   id: Id
   playlistId: Id
-  order: Order
+  idx: Idx
   track: Track
   createdAt: Timestamp
 }
 
-export const Item = {
-  create<T>(val: Partial<Item<T>>): Item<T> {
-    return val as Item<T>
-  },
+export const Item = <T>(val: Partial<Item<T>>): Item<T> => {
+  return val as Item<T>
 }

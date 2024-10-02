@@ -1,10 +1,10 @@
-import express from "express"
-import { NextFunction, Request, Response } from "express"
+import { spotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
+import { playlistRepo } from "@/repo/playlist/playlistRepo"
+import { userRepo } from "@/repo/user/userRepo"
 import { oauth } from "@/usecase/user/oauth"
 import { redirect } from "@/usecase/user/redirect"
-import { spotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
-import { userRepo } from "@/repo/userRepo/userRepo"
-import { playlistRepo } from "@/repo/playlistRepo/playlistRepo"
+import { NextFunction, Request, Response } from "express"
+import express from "express"
 
 export const userController = express.Router()
 
@@ -37,7 +37,7 @@ userController.get(
       res.cookie("id", result.id)
       res.cookie("name", result.name)
       res.cookie("role", result.role)
-      res.cookie("imgs", result.imgs)
+      res.cookie("img", result.img)
       res.cookie("country", result.country)
       res.cookie("accessToken", result.accessToken)
       res.cookie("token", result.token)

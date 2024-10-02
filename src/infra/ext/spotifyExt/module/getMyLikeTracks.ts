@@ -1,4 +1,4 @@
-import { Track } from "@/entity/item/vo"
+import { Track } from "@/shared/vo"
 
 type In = {
   accessToken: string
@@ -7,7 +7,7 @@ type In = {
 type Out = Promise<{
   ok: boolean
   status: number
-  data?: Track[]
+  data: Track[] | undefined
 }>
 
 export const getMyLikeTracks = async ({ accessToken }: In): Out => {
@@ -56,21 +56,33 @@ const api = async (accessToken: string, limit: number, offset: number) => {
   }
 }
 
-const map = async (items: Item[]) => {
+const map = async (items: any) => {
   return await Promise.all(
     items.map(
-      async ({ track }) =>
-        await Track.create({
+      async ({ track }: any) =>
+        await Track({
           artists: track.artists.map((artist: any) => ({
             name: artist.name,
             eid: artist.id,
           })),
           album: {
-            imgs: track.album.images.map((image: any) => ({
-              width: image.width,
-              height: image.height,
-              url: image.url,
-            })),
+            img: {
+              2: {
+                url: track.album.images[0].url,
+                width: track.album.images[0].width,
+                height: track.album.images[0].height,
+              },
+              1: {
+                url: track.album.images[1].url,
+                width: track.album.images[1].width,
+                height: track.album.images[1].height,
+              },
+              0: {
+                url: track.album.images[2].url,
+                width: track.album.images[2].width,
+                height: track.album.images[2].height,
+              },
+            },
             name: track.album.name,
             eid: track.album.id,
           },
@@ -79,57 +91,4 @@ const map = async (items: Item[]) => {
         })
     )
   )
-}
-
-interface Item {
-  added_at: string
-  track: {
-    album: {
-      album_type: string
-      artists: {
-        external_urls: { spotify: string }
-        href: string
-        id: string
-        name: string
-        type: string
-        uri: string
-      }[]
-      available_markets: string[]
-      external_urls: { spotify: string }
-      href: string
-      id: string
-      images: { height: number; width: number; url: string }[]
-      is_playable: boolean
-      name: string
-      release_date: string
-      release_date_precision: string
-      total_tracks: number
-      type: string
-      uri: string
-    }
-    artists: {
-      external_urls: { spotify: string }
-      href: string
-      id: string
-      name: string
-      type: string
-      uri: string
-    }[]
-    available_markets: string[]
-    disc_number: number
-    duration_ms: number
-    explicit: boolean
-    external_ids: { isrc: string }
-    external_urls: { spotify: string }
-    href: string
-    id: string
-    is_local: boolean
-    is_playable: boolean
-    name: string
-    popularity: number
-    preview_url: string
-    track_number: number
-    type: string
-    uri: string
-  }
 }
