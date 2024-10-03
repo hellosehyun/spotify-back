@@ -11,32 +11,28 @@ const header = [
   { id: "createdAt", title: "Created At (Seoul)" },
   { id: "method", title: "Method" },
   { id: "url", title: "URL" },
-  { id: "latency", title: "Latency (ms)" },
+  { id: "latency", title: "Latency" },
   { id: "userId", title: "User Id" },
-  { id: "query", title: "Request Query" },
-  { id: "params", title: "Request Params" },
   { id: "body", title: "Request Body" },
 ]
 
 export const log = async (req: Request, res: Response, next: NextFunction) => {
-  const startTime = Date.now()
+  const startAt = Date.now()
 
   res.on("finish", async () => {
     try {
-      const latency = Date.now() - startTime
+      const latency = Date.now() - startAt
       const logPath = getLogPath()
 
       fs.mkdirSync(logPath, { recursive: true })
 
       const row = {
         status: res.statusCode,
-        createdAt: moment().tz(timezone).format("YYYY-MM-DD HH:mm:ss"),
-        latency,
+        createdAt: moment().tz(timezone).format("YY-MM-DD HH:mm:ss"),
+        latency: `${latency} ms`,
         url: req.url,
         method: req.method,
         userId: req.client?.id,
-        query: JSON.stringify(req.query),
-        params: JSON.stringify(req.params),
         body: JSON.stringify(req.body),
       }
 
@@ -44,10 +40,8 @@ export const log = async (req: Request, res: Response, next: NextFunction) => {
 
       write(path.join(logPath, "all.csv"), row)
 
-      if (status.startsWith("4")) {
-        write(path.join(logPath, "client_error.csv"), row)
-      } else if (status.startsWith("5")) {
-        write(path.join(logPath, "server_error.csv"), row)
+      if (status.startsWith("4") || status.startsWith("5")) {
+        write(path.join(logPath, "err.csv"), row)
       }
 
       return

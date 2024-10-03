@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express"
-import { SpotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
+import { SpotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
 import { encryptToken } from "@/shared/helper/jwt"
 import { InternalError } from "@/shared/static/exception"
 
 export const refresh =
-  (spotifyExt: SpotifyExt) => async (req: Request, res: Response, next: NextFunction) => {
+  (spotifyExt: SpotifyApi) => async (req: Request, res: Response, next: NextFunction) => {
     try {
       const time = 10 * 60 * 1000 // 10 minutes in ms
 

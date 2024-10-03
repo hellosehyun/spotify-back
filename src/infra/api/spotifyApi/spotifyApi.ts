@@ -6,7 +6,7 @@ import { getTracks } from "./module/getTracks"
 import { likeTracks } from "./module/likeTracks"
 import { refreshToken } from "./module/refreshToken"
 
-export interface SpotifyExt {
+export interface SpotifyApi {
   getTracks(
     params: Parameters<typeof getTracks>[0] //
   ): ReturnType<typeof getTracks>
@@ -36,7 +36,7 @@ export interface SpotifyExt {
   ): ReturnType<typeof dislikeTracks>
 }
 
-export const spotifyExt: SpotifyExt = {
+export const spotifyApi: SpotifyApi = {
   getTracks,
   getToken,
   refreshToken,

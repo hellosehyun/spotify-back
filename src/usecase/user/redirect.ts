@@ -1,7 +1,7 @@
 import { Type } from "@/entity/playlist/vo"
 import { Country, Email, Name, Role } from "@/entity/user/vo"
 import { db } from "@/infra/drizzle/db"
-import { SpotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
+import { SpotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
 import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
 import { UserRepo } from "@/repo/user/userRepo"
 import { encryptToken } from "@/shared/helper/jwt"
@@ -24,7 +24,7 @@ type Out = Promise<{
 }>
 
 export const redirect = (
-  spotifyExt: SpotifyExt, //
+  spotifyExt: SpotifyApi, //
   userRepo: UserRepo,
   playlistRepo: PlaylistRepo
 ) => ({

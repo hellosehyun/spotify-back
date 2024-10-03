@@ -1,4 +1,4 @@
-import { spotifyExt } from "@/infra/ext/spotifyExt/spotifyExt"
+import { spotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
 import { playlistRepo } from "@/repo/playlist/playlistRepo"
 import { userRepo } from "@/repo/user/userRepo"
 import { oauth } from "@/usecase/user/oauth"
@@ -26,7 +26,7 @@ userController.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await redirect(
-        spotifyExt, //
+        spotifyApi, //
         userRepo,
         playlistRepo
       ).execute({

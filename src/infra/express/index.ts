@@ -7,25 +7,37 @@ import { log } from "./mw/log"
 import { refresh } from "./mw/refresh"
 import { resolve } from "./mw/resolve"
 import { userController } from "./controller/userController"
-import { spotifyExt } from "../ext/spotifyExt/spotifyExt"
+import { spotifyApi } from "../api/spotifyApi/spotifyApi"
 import { playlistController } from "./controller/playlistController"
+import { initElastic } from "./init/initElastic"
+import { elasticExt } from "../elastic/elasticExt"
 
 const port = 3001
 const app = express()
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
+const run = async () => {
+  try {
+    await initElastic(elasticExt)
 
-app.use(log)
-app.use(decrypt)
-app.use(refresh(spotifyExt))
+    app.use(express.json())
+    app.use(express.urlencoded({ extended: true }))
+    app.use(cookieParser())
 
-app.use("/", userController)
-app.use("/", playlistController)
+    app.use(log)
+    app.use(decrypt)
+    app.use(refresh(spotifyApi))
 
-app.use(resolve)
+    app.use("/", userController)
+    app.use("/", playlistController)
 
-app.listen(port, () => {
-  console.log(`${port}번 포트로 서버 실행`)
-})
+    app.use(resolve)
+
+    app.listen(port, () => {
+      console.log(`${port}번 포트로 서버 실행`)
+    })
+  } catch (err) {
+    process.exit(1)
+  }
+}
+
+run()
