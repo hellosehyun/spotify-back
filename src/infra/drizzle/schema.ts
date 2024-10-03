@@ -10,7 +10,7 @@ import {
 } from "drizzle-orm/pg-core"
 
 export const user = pgTable("user", {
-  id: serial("id").primaryKey().notNull(),
+  id: varchar("id").primaryKey().notNull(),
   name: varchar("name").notNull(),
   email: varchar("email").notNull(),
   country: varchar("country").notNull(),
@@ -24,8 +24,8 @@ export const user = pgTable("user", {
 })
 
 export const playlist = pgTable("playlist", {
-  id: serial("id").primaryKey().notNull(),
-  creatorId: integer("creator_id")
+  id: varchar("id").primaryKey().notNull(),
+  creatorId: varchar("creator_id")
     .references(() => user.id)
     .notNull(),
   img: jsonb("img").notNull(),
@@ -41,8 +41,8 @@ export const playlist = pgTable("playlist", {
 export const item = pgTable(
   "item",
   {
-    id: serial("id").primaryKey().notNull(),
-    playlistId: integer("playlist_id")
+    id: varchar("id").primaryKey().notNull(),
+    playlistId: varchar("playlist_id")
       .references(() => playlist.id)
       .notNull(),
     idx: integer("idx").notNull(),

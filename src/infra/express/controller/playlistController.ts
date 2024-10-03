@@ -35,8 +35,8 @@ playlistController.get(
         playlistRepo //
       ).execute({
         clientId: req.client?.id,
-        userId: req.params.id,
-        offset: req.query.offset,
+        creatorId: req.params.id,
+        page: req.query.page,
       })
 
       return res.status(200).json(result)

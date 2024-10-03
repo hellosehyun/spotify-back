@@ -14,6 +14,14 @@ userController.get(
     try {
       const result = oauth().execute()
 
+      res.clearCookie("id")
+      res.clearCookie("name")
+      res.clearCookie("role")
+      res.clearCookie("img")
+      res.clearCookie("country")
+      res.clearCookie("accessToken")
+      res.clearCookie("token")
+
       return res.status(200).json(result)
     } catch (err) {
       return next(err)

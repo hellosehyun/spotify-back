@@ -9,26 +9,13 @@ type In = {
   eid?: Eid
   userId?: Id
 }
-type Out = Promise<
-  | User<{
-      id: Id
-      name: Name
-      email: Email
-      country: Country
-      img: Img
-      bannerImg: BannerImg
-      eid: Eid
-      role: Role
-      followerCnt: Cnt
-      createdAt: Timestamp
-    }>
-  | undefined
->
+type Out = Promise<User | undefined>
 
 export const findUser = async (arg: In, tx = db): Out => {
   const q = tx.select().from(user)
 
   const cond = [isNull(user.deletedAt)]
+
   if (arg.eid !== undefined) cond.push(eq(user.eid, arg.eid))
   if (arg.userId !== undefined) cond.push(eq(user.id, arg.userId))
 
@@ -38,7 +25,7 @@ export const findUser = async (arg: In, tx = db): Out => {
 
   if (!row) return undefined
 
-  const entity = User({
+  return User({
     id: Id(row.id),
     name: Name(row.name),
     email: Email(row.email),
@@ -50,6 +37,4 @@ export const findUser = async (arg: In, tx = db): Out => {
     followerCnt: Cnt(row.followerCnt),
     createdAt: Timestamp(row.createdAt),
   })
-
-  return entity
 }

@@ -4,8 +4,6 @@ import fs from "fs"
 import path from "path"
 import moment from "moment-timezone"
 
-const timezone = "Asia/Seoul"
-
 const header = [
   { id: "status", title: "Status" },
   { id: "createdAt", title: "Created At (Seoul)" },
@@ -28,7 +26,7 @@ export const log = async (req: Request, res: Response, next: NextFunction) => {
 
       const row = {
         status: res.statusCode,
-        createdAt: moment().tz(timezone).format("YY-MM-DD HH:mm:ss"),
+        createdAt: new Date(),
         latency: `${latency} ms`,
         url: req.url,
         method: req.method,
@@ -54,7 +52,7 @@ export const log = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 const getLogPath = () => {
-  const curDate = moment().tz(timezone).format("YYMMDD")
+  const curDate = moment().tz("Asia/Seoul").format("YYMMDD")
   const curPath = path.dirname(__filename)
   const logPath = path.join(curPath, `../../../../log/${curDate}/`)
 

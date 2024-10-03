@@ -1,5 +1,5 @@
 import { Idx } from "@/entity/item/vo"
-import { IsPublic, Name as PlaylistName, Type } from "@/entity/playlist/vo"
+import { Detail, IsPublic, Name as PlaylistName, Type } from "@/entity/playlist/vo"
 import { Name as UserName } from "@/entity/user/vo"
 import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
 import { BadRequest, Forbidden, NotFound } from "@/shared/static/exception"
@@ -15,6 +15,7 @@ type Out = Promise<{
   img: Img
   type: Type
   name: PlaylistName
+  detail: Detail
   isPublic: IsPublic
   itemCnt: Cnt
   isMine: boolean
@@ -37,18 +38,25 @@ export const getPlaylist = (
   execute: async (arg: In): Out => {
     const dto = pre(arg)
 
-    const playlist = await playlistRepo.findPlaylist({
+    const entity = await playlistRepo.findPlaylist({
       clientId: dto.clientId,
       playlistId: dto.playlistId,
     })
 
-    if (playlist === undefined) throw new NotFound()
-    if (!playlist.isPublic && playlist.creator.id !== dto.clientId) throw new Forbidden()
+    if (entity === undefined) throw new NotFound()
+    if (!entity.playlist.isPublic && entity.creator.id !== dto.clientId) throw new Forbidden()
+
+    const { creatorId, coverImgs, ...playlistRest } = entity.playlist
 
     return {
-      ...playlist,
-      isMine: playlist.creator.id === dto.clientId,
-      items: playlist.items.map(({ createdAt, ...rest }) => ({
+      ...playlistRest,
+      creator: {
+        id: entity.creator.id,
+        name: entity.creator.name,
+        img: entity.creator.img,
+      },
+      isMine: entity.creator.id === dto.clientId,
+      items: entity.items.map(({ createdAt, eid, id, ...rest }) => ({
         ...rest,
         addedAt: createdAt,
       })),

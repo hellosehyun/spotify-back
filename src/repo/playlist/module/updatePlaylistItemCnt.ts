@@ -5,7 +5,7 @@ import { and, eq, isNull, sql } from "drizzle-orm"
 
 type In = {
   calculate?: {
-    playlistId: Id
+    id: Id
     type: "add" | "sub"
     val: number
   }
@@ -14,7 +14,8 @@ type Out = Promise<void>
 
 export const updatePlaylistItemCnt = async (arg: In, tx = db): Out => {
   if (arg.calculate !== undefined) {
-    const { playlistId, type, val } = arg.calculate
+    const { id, type, val } = arg.calculate
+
     const q = tx
       .update(playlist)
       .set({
@@ -26,7 +27,7 @@ export const updatePlaylistItemCnt = async (arg: In, tx = db): Out => {
       .where(
         and(
           isNull(playlist.deletedAt), //
-          eq(playlist.id, playlistId)
+          eq(playlist.id, id)
         )
       )
 

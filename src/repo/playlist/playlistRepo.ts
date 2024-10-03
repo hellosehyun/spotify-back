@@ -1,10 +1,7 @@
-import { createItems } from "./module/createItems"
-import { createPlaylist } from "./module/createPlaylist"
-import { deleteItems } from "./module/deleteItems"
-import { deletePlaylist } from "./module/deletePlaylist"
-import { findItems } from "./module/findItems"
-import { findPlaylist } from "./module/findPlaylist"
 import { findPlaylists } from "./module/findPlaylists"
+import { findPlaylist } from "./module/findPlaylist"
+import { saveItems } from "./module/saveItems"
+import { savePlaylist } from "./module/savePlaylist"
 import { updateItemsIdx } from "./module/updateItemsIdx"
 import { updatePlaylistItemCnt } from "./module/updatePlaylistItemCnt"
 
@@ -19,20 +16,15 @@ export type PlaylistRepo = {
     tx?: Parameters<typeof findPlaylists>[1]
   ): ReturnType<typeof findPlaylists>
 
-  createPlaylist(
-    arg: Parameters<typeof createPlaylist>[0],
-    tx?: Parameters<typeof createPlaylist>[1]
-  ): ReturnType<typeof createPlaylist>
+  savePlaylist(
+    arg: Parameters<typeof savePlaylist>[0],
+    tx?: Parameters<typeof savePlaylist>[1]
+  ): ReturnType<typeof savePlaylist>
 
-  createItems(
-    arg: Parameters<typeof createItems>[0],
-    tx?: Parameters<typeof createItems>[1]
-  ): ReturnType<typeof createItems>
-
-  deleteItems(
-    arg: Parameters<typeof deleteItems>[0],
-    tx?: Parameters<typeof deleteItems>[1]
-  ): ReturnType<typeof deleteItems>
+  saveItems(
+    arg: Parameters<typeof saveItems>[0],
+    tx?: Parameters<typeof saveItems>[1]
+  ): ReturnType<typeof saveItems>
 
   updateItemsIdx(
     arg: Parameters<typeof updateItemsIdx>[0],
@@ -43,26 +35,13 @@ export type PlaylistRepo = {
     arg: Parameters<typeof updatePlaylistItemCnt>[0],
     tx?: Parameters<typeof updatePlaylistItemCnt>[1]
   ): ReturnType<typeof updatePlaylistItemCnt>
-
-  deletePlaylist(
-    arg: Parameters<typeof deletePlaylist>[0],
-    tx?: Parameters<typeof deletePlaylist>[1]
-  ): ReturnType<typeof deletePlaylist>
-
-  findItems(
-    arg: Parameters<typeof findItems>[0],
-    tx?: Parameters<typeof findItems>[1]
-  ): ReturnType<typeof findItems>
 }
 
 export const playlistRepo: PlaylistRepo = {
   findPlaylist,
   findPlaylists,
-  createItems,
-  createPlaylist,
-  deleteItems,
+  savePlaylist,
+  saveItems,
   updateItemsIdx,
   updatePlaylistItemCnt,
-  deletePlaylist,
-  findItems,
 }

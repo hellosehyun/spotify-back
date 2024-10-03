@@ -10,7 +10,7 @@ declare global {
 }
 
 interface Client {
-  id: number
+  id: string
   role: string
   accessToken: string
   refreshToken: string

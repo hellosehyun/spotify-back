@@ -9,7 +9,11 @@ type Out = Promise<{
     | {
         display_name: string
         id: string
-        images: object[]
+        images: {
+          url: string
+          height: number
+          width: number
+        }[]
         uri: string
         followers: { total: number }
         country: string

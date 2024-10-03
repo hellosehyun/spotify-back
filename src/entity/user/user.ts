@@ -1,7 +1,7 @@
 import { Cnt, Eid, Id, Img, Timestamp } from "@/shared/vo"
 import { BannerImg, Role, Name, Email, Country } from "./vo"
 
-export type User<T = {}> = T & {
+export type User = {
   id: Id
   name: Name
   email: Email
@@ -14,6 +14,6 @@ export type User<T = {}> = T & {
   createdAt: Timestamp
 }
 
-export const User = <T>(val: Partial<User<T>>): User<T> => {
-  return val as User<T>
+export const User = (val: User): User => {
+  return val as User
 }

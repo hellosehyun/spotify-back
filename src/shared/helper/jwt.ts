@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
 
 interface Token {
-  id: number
+  id: string
   role: string
   accessToken: string
   refreshToken: string

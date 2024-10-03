@@ -1,12 +1,17 @@
-import { Type } from "@/entity/playlist/vo"
-import { Country, Email, Name, Role } from "@/entity/user/vo"
+import { Detail, IsPublic, Name as PlaylistName, Type } from "@/entity/playlist/vo"
+import { BannerImg, Country, Email, Name as UserName, Role } from "@/entity/user/vo"
+import { Cnt, Eid, Id, Img, Timestamp } from "@/shared/vo"
+import { User } from "@/entity/user/user"
+import { Playlist } from "@/entity/playlist/playlist"
+import { Item } from "@/entity/item/item"
+import { Idx } from "@/entity/item/vo"
 import { db } from "@/infra/drizzle/db"
 import { SpotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
 import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
 import { UserRepo } from "@/repo/user/userRepo"
 import { encryptToken } from "@/shared/helper/jwt"
 import { BadGateway, BadRequest } from "@/shared/static/exception"
-import { Eid, Id, Img } from "@/shared/vo"
+import { nanoid } from "nanoid"
 
 type In = {
   code: any
@@ -16,7 +21,7 @@ type In = {
 type Out = Promise<{
   id: Id
   role: Role
-  name: Name
+  name: UserName
   img: Img
   country: Country
   accessToken: string
@@ -24,41 +29,89 @@ type Out = Promise<{
 }>
 
 export const redirect = (
-  spotifyExt: SpotifyApi, //
+  spotifyApi: SpotifyApi, //
   userRepo: UserRepo,
   playlistRepo: PlaylistRepo
 ) => ({
   execute: async (arg: In): Out => {
-    const dto1 = pre1(arg)
+    const dto = pre(arg)
 
-    const res1 = await spotifyExt.getToken({ code: dto1.code, state: dto1.state })
+    const res1 = await spotifyApi.getToken({ code: dto.code, state: dto.state })
     if (!res1.ok) throw new BadGateway()
 
     const spotifyToken = res1.data!
 
-    const res2 = await spotifyExt.getProfile({ accessToken: spotifyToken.access_token })
+    const res2 = await spotifyApi.getProfile({ accessToken: spotifyToken.access_token })
     if (!res2.ok) throw new BadGateway()
 
-    const dto2 = pre2(res2.data!)
+    const profile = res2.data!
 
-    let user = await userRepo.findUser({ eid: dto2.eid })
+    let user = await userRepo.findUser({ eid: Eid(profile.id) })
     if (user === undefined) {
-      const res3 = await spotifyExt.getMyLikeTracks({ accessToken: spotifyToken.access_token })
+      const res3 = await spotifyApi.getMyLikeTracks({ accessToken: spotifyToken.access_token })
       if (!res3.ok) throw new BadGateway()
 
-      const myLiketracks = res3.data!
-      const type = Type("like")
-      const name = Name("좋아요 표시한 곡")
+      user = User({
+        id: Id(nanoid(20)),
+        name: UserName(profile.display_name),
+        country: Country(profile.country),
+        img: Img(
+          profile.images.length > 0
+            ? {
+                2: {
+                  url: profile.images[0].url,
+                  width: profile.images[0].width,
+                  height: profile.images[0].height,
+                },
+                1: {
+                  url: profile.images[1].url,
+                  width: profile.images[1].width,
+                  height: profile.images[1].height,
+                },
+                0: {
+                  url: profile.images[2].url,
+                  width: profile.images[2].width,
+                  height: profile.images[2].height,
+                },
+              }
+            : {}
+        ),
+        eid: Eid(profile.id),
+        email: Email(profile.email),
+        bannerImg: BannerImg({}),
+        role: Role("general"),
+        followerCnt: Cnt(0),
+        createdAt: Timestamp(new Date()),
+      })
 
-      user = await db.transaction(async (tx) => {
-        const user = await userRepo.createUser(dto2, tx)
-        const playlist = await playlistRepo.createPlaylist({ creatorId: user.id, name, type }, tx)
-        playlistRepo.createItems({ playlistId: playlist.id, tracks: myLiketracks }, tx)
-        playlistRepo.updatePlaylistItemCnt(
-          { calculate: { playlistId: playlist.id, type: "add", val: myLiketracks.length } },
-          tx
-        )
-        return user
+      const playlist = Playlist({
+        id: Id(nanoid(20)),
+        creatorId: user.id,
+        img: Img({}),
+        coverImgs: [],
+        name: PlaylistName("졸아요 표시한 곡"),
+        detail: Detail(""),
+        isPublic: IsPublic(true),
+        itemCnt: Cnt(res3.data!.length),
+        type: Type("like"),
+        createdAt: Timestamp(new Date()),
+      })
+
+      const items = res3.data!.reverse().map((track, i) =>
+        Item({
+          id: Id(nanoid(20)),
+          playlistId: playlist.id,
+          idx: Idx(i),
+          eid: Eid(track.eid),
+          track,
+          createdAt: Timestamp(new Date()),
+        })
+      )
+
+      await db.transaction(async (tx) => {
+        userRepo.saveUser({ user: user! }, tx)
+        playlistRepo.savePlaylist({ playlist }, tx)
+        playlistRepo.saveItems({ items }, tx)
       })
     }
 
@@ -86,31 +139,11 @@ export const redirect = (
   },
 })
 
-const pre1 = (arg: In) => {
+const pre = (arg: In) => {
   try {
     return {
       code: arg.code!,
       state: arg.state!,
-    }
-  } catch (err) {
-    throw new BadRequest()
-  }
-}
-
-const pre2 = (arg: any) => {
-  try {
-    return {
-      name: Name(arg.display_name!),
-      country: Country(arg.country!),
-      img: arg.images!.map((img: any) =>
-        Img({
-          url: img.url!,
-          width: img.width!,
-          height: img.height!,
-        })
-      ),
-      eid: Eid(arg.id!),
-      email: Email(arg.email!),
     }
   } catch (err) {
     throw new BadRequest()

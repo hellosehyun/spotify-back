@@ -1,7 +1,7 @@
 import zod from "zod"
 
-export type Id = number & { __brand: symbol }
+export type Id = string & { __brand: symbol }
 
 export const Id = (val: any): Id => {
-  return zod.coerce.number().int().positive().parse(val) as Id
+  return zod.string().parse(val) as Id
 }
