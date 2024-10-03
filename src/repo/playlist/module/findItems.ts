@@ -2,16 +2,16 @@ import { Item } from "@/entity/item/item"
 import { Idx } from "@/entity/item/vo"
 import { db } from "@/infra/drizzle/db"
 import { item, playlist } from "@/infra/drizzle/schema"
-import { Id, Timestamp, Track } from "@/shared/vo"
+import { Id, Offset, Timestamp, Track } from "@/shared/vo"
 import { and, eq, isNull } from "drizzle-orm"
 
 type In = {
   clientId: Id
   playlistId: Id
+  offset: Offset
 }
 type Out = Promise<
   | Item<{
-      id: Id
       idx: Idx
       track: Track
       createdAt: Timestamp
@@ -20,9 +20,10 @@ type Out = Promise<
 >
 
 export const findItems = async (arg: In, tx = db): Out => {
+  const limit = 50
+
   const q = tx
     .select({
-      id: item.id,
       idx: item.idx,
       track: item.track,
       createdAt: item.createdAt,
@@ -34,6 +35,8 @@ export const findItems = async (arg: In, tx = db): Out => {
         eq(playlist.id, arg.playlistId)
       )
     )
+    .limit(limit)
+    .offset(arg.offset)
 
   const rows = await q.execute()
 
@@ -41,7 +44,6 @@ export const findItems = async (arg: In, tx = db): Out => {
 
   const entities = rows.map((row) =>
     Item({
-      id: Id(row.id),
       idx: Idx(row.idx),
       track: Track(row.track),
       createdAt: Timestamp(row.createdAt),

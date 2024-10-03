@@ -37,6 +37,7 @@ type Out = Promise<
 >
 
 export const findPlaylist = async (arg: In, tx = db): Out => {
+  const limit = 50
   const w = tx
     .select() //
     .from(item)
@@ -47,6 +48,8 @@ export const findPlaylist = async (arg: In, tx = db): Out => {
       )
     )
     .orderBy(desc(item.idx))
+    .limit(limit)
+    .offset(0)
     .as("w")
 
   const q = tx

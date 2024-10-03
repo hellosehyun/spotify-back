@@ -53,7 +53,11 @@ export const redirect = (
       user = await db.transaction(async (tx) => {
         const user = await userRepo.createUser(dto2, tx)
         const playlist = await playlistRepo.createPlaylist({ creatorId: user.id, name, type }, tx)
-        await playlistRepo.createItems({ playlistId: playlist.id, tracks: myLiketracks }, tx)
+        playlistRepo.createItems({ playlistId: playlist.id, tracks: myLiketracks }, tx)
+        playlistRepo.updatePlaylistItemCnt(
+          { calculate: { playlistId: playlist.id, type: "add", val: myLiketracks.length } },
+          tx
+        )
         return user
       })
     }
@@ -65,6 +69,10 @@ export const redirect = (
       refreshToken: spotifyToken.refresh_token,
       expireAt: Date.now() + spotifyToken.expires_in * 1000,
     })
+
+    console.log(user, "\n")
+    console.log(spotifyToken.access_token, "\n")
+    console.log(`token=${token}\n`)
 
     return {
       id: user.id,

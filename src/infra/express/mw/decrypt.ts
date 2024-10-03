@@ -4,12 +4,12 @@ import { decryptToken } from "@/shared/helper/jwt"
 declare global {
   namespace Express {
     interface Request {
-      user?: User
+      client?: Client
     }
   }
 }
 
-interface User {
+interface Client {
   id: number
   role: string
   accessToken: string
@@ -21,9 +21,9 @@ export const decrypt = async (req: Request, res: Response, next: NextFunction) =
   try {
     if (req.cookies.token) {
       const user = decryptToken(req.cookies.token)
-      req.user = user
+      req.client = user
     } else {
-      req.user = undefined
+      req.client = undefined
     }
 
     return next()

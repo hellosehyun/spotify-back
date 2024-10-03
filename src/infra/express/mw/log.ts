@@ -34,7 +34,7 @@ export const log = async (req: Request, res: Response, next: NextFunction) => {
         latency,
         url: req.url,
         method: req.method,
-        userId: req.user?.id,
+        userId: req.client?.id,
         query: JSON.stringify(req.query),
         params: JSON.stringify(req.params),
         body: JSON.stringify(req.body),

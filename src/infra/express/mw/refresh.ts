@@ -8,25 +8,25 @@ export const refresh =
     try {
       const time = 10 * 60 * 1000 // 10 minutes in ms
 
-      // if (req.user && Date.now() >= req.user.expireAt - time) {
-      if (req.user) {
+      // if (req.client && Date.now() >= req.client.expireAt - time) {
+      if (req.client) {
         const extRes = await spotifyExt.refreshToken({
-          refreshToken: req.user.refreshToken,
+          refreshToken: req.client.refreshToken,
         })
         if (!extRes.ok) throw new InternalError()
 
         const spotifyToken = extRes.data!
 
         const newUser = {
-          id: req.user.id,
-          role: req.user.role,
-          refreshToken: req.user.refreshToken,
+          id: req.client.id,
+          role: req.client.role,
+          refreshToken: req.client.refreshToken,
           accessToken: spotifyToken.access_token,
           expireAt: Date.now() + spotifyToken.expires_in * 1000,
         }
         const newToken = encryptToken(newUser)
 
-        req.user = newUser
+        req.client = newUser
         res.cookie("accessToken", newUser.accessToken)
         res.cookie("token", newToken)
       }

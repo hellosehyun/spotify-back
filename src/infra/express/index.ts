@@ -8,6 +8,7 @@ import { refresh } from "./mw/refresh"
 import { resolve } from "./mw/resolve"
 import { userController } from "./controller/userController"
 import { spotifyExt } from "../ext/spotifyExt/spotifyExt"
+import { playlistController } from "./controller/playlistController"
 
 const port = 3001
 const app = express()
@@ -21,6 +22,7 @@ app.use(decrypt)
 app.use(refresh(spotifyExt))
 
 app.use("/", userController)
+app.use("/", playlistController)
 
 app.use(resolve)
 

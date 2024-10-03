@@ -4,12 +4,14 @@ import { User } from "@/entity/user/user"
 import { Name as UserName } from "@/entity/user/vo"
 import { db } from "@/infra/drizzle/db"
 import { playlist, user } from "@/infra/drizzle/schema"
-import { Id, Img } from "@/shared/vo"
+import { Id, Img, Offset } from "@/shared/vo"
 import { and, eq, inArray, isNull, or } from "drizzle-orm"
 
 type In = {
   clientId: Id
-  playlistIds: Id[]
+  offset: Offset
+  playlistIds?: Id[]
+  userId?: Id
 }
 type Out = Promise<
   | Playlist<{
@@ -28,6 +30,7 @@ type Out = Promise<
 >
 
 export const findPlaylists = async (arg: In, tx = db): Out => {
+  const limit = 50
   const q = tx
     .select({
       id: playlist.id,
@@ -43,13 +46,17 @@ export const findPlaylists = async (arg: In, tx = db): Out => {
     })
     .from(playlist)
     .innerJoin(user, eq(user.id, playlist.creatorId))
-    .where(
-      and(
-        isNull(playlist.deletedAt), //
-        or(eq(playlist.isPublic, true), eq(playlist.creatorId, arg.clientId)),
-        inArray(playlist.id, arg.playlistIds)
-      )
-    )
+    .limit(limit)
+    .offset(arg.offset)
+
+  const cond = [
+    isNull(playlist.deletedAt),
+    or(eq(playlist.isPublic, true), eq(playlist.creatorId, arg.clientId)),
+  ]
+  if (arg.playlistIds !== undefined) cond.push(inArray(playlist.id, arg.playlistIds))
+  if (arg.userId !== undefined) cond.push(eq(playlist.creatorId, arg.userId))
+
+  q.where(and(...cond))
 
   const rows = await q.execute()
 
