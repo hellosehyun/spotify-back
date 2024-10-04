@@ -10,7 +10,7 @@ type Out = Promise<{
   status: number
 }>
 
-export const dislikeTracks = async (arg: In): Out => {
+export const unlikeTracks = async (arg: In): Out => {
   const res = await fetch("https://api.spotify.com/v1/me/tracks", {
     method: "DELETE",
     headers: {

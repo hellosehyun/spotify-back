@@ -1,4 +1,4 @@
-import { Cnt, Id, Img, Timestamp } from "@/shared/vo"
+import { Id, Img, Timestamp, Track } from "@/shared/vo"
 import { Detail, IsPublic, Name, Type } from "./vo"
 
 export type Playlist = {
@@ -10,7 +10,7 @@ export type Playlist = {
   coverImgs: Img[]
   detail: Detail
   isPublic: IsPublic
-  itemCnt: Cnt
+  tracks: Track[]
   createdAt: Timestamp
 }
 

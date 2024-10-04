@@ -11,6 +11,7 @@ import { spotifyApi } from "../api/spotifyApi/spotifyApi"
 import { playlistController } from "./controller/playlistController"
 import { initElastic } from "./init/initElastic"
 import { elasticExt } from "../elastic/elasticExt"
+import { trackController } from "./controller/trackController"
 
 const port = 3001
 const app = express()
@@ -29,6 +30,7 @@ const run = async () => {
 
     app.use("/", userController)
     app.use("/", playlistController)
+    app.use("/", trackController)
 
     app.use(resolve)
 

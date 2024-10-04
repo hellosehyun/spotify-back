@@ -14,9 +14,9 @@ type Out = Promise<
     id: Id
     img: Img
     name: PlaylistName
+    trackCnt: number
     coverImgs: Img[]
     isPublic: IsPublic
-    itemCnt: Cnt
     createdAt: Timestamp
   }[]
 >
@@ -35,9 +35,12 @@ export const getUserPlaylist = (
 
     if (entities === undefined) throw new NotFound()
 
-    return entities.map(
-      ({ playlist: { type, creatorId, detail, ...restPlaylist } }) => restPlaylist
-    )
+    return entities.map(({ playlist: { type, creatorId, detail, tracks, ...restPlaylist } }) => {
+      return {
+        trackCnt: tracks.length,
+        ...restPlaylist,
+      }
+    })
   },
 })
 

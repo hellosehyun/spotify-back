@@ -1,5 +1,3 @@
-import { Item } from "@/entity/item/item"
-import { Idx } from "@/entity/item/vo"
 import { Playlist } from "@/entity/playlist/playlist"
 import { Detail, IsPublic, Name, Type } from "@/entity/playlist/vo"
 import { SpotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
@@ -18,14 +16,12 @@ type In = {
   eids: any[]
 }
 
-// type Out = Promise<{
-//   id: Id
-//   img: Img
-//   coverImgs: Img[]
-//   name: Name
-// }>
-
-type Out = Promise<any>
+type Out = Promise<{
+  id: Id
+  img: Img
+  coverImgs: Img[]
+  name: Name
+}>
 
 export const createPlaylist = (
   playlistRepo: PlaylistRepo, //
@@ -47,25 +43,12 @@ export const createPlaylist = (
       name: dto.name,
       detail: Detail(""),
       isPublic: IsPublic(true),
-      itemCnt: Cnt(tracks.length),
+      tracks,
       type: Type("default"),
       createdAt: Timestamp(new Date()),
     })
 
-    const items = tracks.reverse().map((track) =>
-      Item({
-        id: Id(nanoid(20)),
-        playlistId: playlist.id,
-        eid: Eid(track.eid),
-        createdAt: Timestamp(new Date()),
-        track,
-      })
-    )
-
-    await db.transaction(async (tx) => {
-      playlistRepo.savePlaylist({ playlist }, tx)
-      playlistRepo.saveItems({ items }, tx)
-    })
+    await playlistRepo.savePlaylist({ playlist })
 
     return {
       id: playlist.id,

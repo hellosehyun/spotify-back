@@ -1,1 +1,0 @@
-export { Idx } from "./idx"

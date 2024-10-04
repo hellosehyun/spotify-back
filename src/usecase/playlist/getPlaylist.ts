@@ -1,4 +1,3 @@
-import { Idx } from "@/entity/item/vo"
 import { Detail, IsPublic, Name as PlaylistName, Type } from "@/entity/playlist/vo"
 import { Name as UserName } from "@/entity/user/vo"
 import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
@@ -17,7 +16,6 @@ type Out = Promise<{
   name: PlaylistName
   detail: Detail
   isPublic: IsPublic
-  itemCnt: Cnt
   isMine: boolean
   createdAt: Timestamp
   creator: {
@@ -25,11 +23,8 @@ type Out = Promise<{
     name: UserName
     img: Img
   }
-  items: {
-    idx: Idx
-    track: Track
-    addedAt: Timestamp
-  }[]
+  trackCnt: number
+  tracks: Track[]
 }>
 
 export const getPlaylist = (
@@ -38,7 +33,7 @@ export const getPlaylist = (
   execute: async (arg: In): Out => {
     const dto = pre(arg)
 
-    const entity = await playlistRepo.findPlaylist({
+    const entity = await playlistRepo.findPlaylistOverview({
       clientId: dto.clientId,
       playlistId: dto.playlistId,
     })
@@ -50,17 +45,13 @@ export const getPlaylist = (
 
     return {
       ...playlistRest,
+      trackCnt: playlistRest.tracks.length,
       creator: {
         id: entity.creator.id,
         name: entity.creator.name,
         img: entity.creator.img,
       },
       isMine: entity.creator.id === dto.clientId,
-      items: entity.items.map(({ createdAt, idx, track }) => ({
-        idx: idx!,
-        track,
-        addedAt: createdAt,
-      })),
     }
   },
 })

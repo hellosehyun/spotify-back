@@ -1,12 +1,12 @@
 import {
   pgTable,
-  serial,
   integer,
   varchar,
   jsonb,
   timestamp,
   boolean,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core"
 
 export const user = pgTable("user", {
@@ -20,6 +20,10 @@ export const user = pgTable("user", {
   role: varchar("role").notNull(),
   followerCnt: integer("follower_cnt").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
   deletedAt: timestamp("deleted_at", { mode: "date" }),
 })
 
@@ -34,26 +38,11 @@ export const playlist = pgTable("playlist", {
   detail: varchar("detail").notNull(),
   type: varchar("type").notNull(),
   isPublic: boolean("is_public").notNull(),
-  itemCnt: integer("item_cnt").notNull(),
+  tracks: jsonb("tracks").array().notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
   deletedAt: timestamp("deleted_at", { mode: "date" }),
 })
-export const item = pgTable(
-  "item",
-  {
-    id: varchar("id").primaryKey().notNull(),
-    playlistId: varchar("playlist_id")
-      .references(() => playlist.id)
-      .notNull(),
-    idx: integer("idx").notNull(),
-    eid: varchar("eid").notNull(),
-    track: jsonb("track").notNull(),
-    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-    deletedAt: timestamp("deleted_at", { mode: "date" }),
-  },
-  (table) => {
-    return {
-      eidIdx: index("item_eid_idx").on(table.eid),
-    }
-  }
-)

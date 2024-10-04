@@ -4,72 +4,39 @@ import { User } from "@/entity/user/user"
 import { BannerImg, Country, Email, Role, Name as UserName } from "@/entity/user/vo"
 import { db } from "@/infra/drizzle/db"
 import { playlist, user } from "@/infra/drizzle/schema"
-import { Cnt, Eid, Id, Img, Page, Timestamp, Track } from "@/shared/vo"
-import { and, eq, inArray, isNull, or, sql } from "drizzle-orm"
+import { Cnt, Eid, Id, Img, Timestamp, Track } from "@/shared/vo"
+import { and, eq, isNull } from "drizzle-orm"
 
 type In = {
   clientId: Id
-  creatorId?: Id
-  playlistIds?: Id[]
-  page: Page
+  playlistId: Id
 }
 type Out = Promise<
   | {
       playlist: Playlist
       creator: User
-    }[]
+    }
   | undefined
 >
 
-export const findPlaylists = async (arg: In, tx = db): Out => {
-  const limit = 50
-
+export const findPlaylistOverview = async (arg: In, tx = db): Out => {
   const q = tx
-    .select({
-      playlist: {
-        id: playlist.id,
-        creatorId: playlist.creatorId,
-        img: playlist.img,
-        coverImgs: playlist.coverImgs,
-        name: playlist.name,
-        detail: playlist.detail,
-        type: playlist.type,
-        isPublic: playlist.isPublic,
-        tracks: playlist.tracks,
-        createdAt: playlist.createdAt,
-      },
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        country: user.country,
-        img: user.img,
-        bannerImg: user.bannerImg,
-        eid: user.eid,
-        role: user.role,
-        followerCnt: user.followerCnt,
-        createdAt: user.createdAt,
-      },
-    })
+    .select()
     .from(playlist)
     .innerJoin(user, eq(user.id, playlist.creatorId))
-    .limit(50)
-    .offset((arg.page - 1) * limit)
+    .where(
+      and(
+        isNull(playlist.deletedAt), //
+        eq(playlist.id, arg.playlistId)
+      )
+    )
+    .groupBy(playlist.id, user.id)
 
-  const cond = [
-    isNull(playlist.deletedAt),
-    or(eq(playlist.isPublic, true), eq(playlist.creatorId, arg.clientId)),
-  ]
-  if (arg.playlistIds !== undefined) cond.push(inArray(playlist.id, arg.playlistIds))
-  if (arg.creatorId !== undefined) cond.push(eq(playlist.creatorId, arg.creatorId))
+  const [row] = await q.execute()
 
-  q.where(and(...cond))
+  if (!row) return undefined
 
-  const rows = await q.execute()
-
-  if (rows.length === 0) return undefined
-
-  return rows.map((row) => ({
+  return {
     playlist: Playlist({
       id: Id(row.playlist.id),
       creatorId: Id(row.playlist.creatorId),
@@ -94,5 +61,5 @@ export const findPlaylists = async (arg: In, tx = db): Out => {
       bannerImg: BannerImg(row.user.bannerImg),
       createdAt: Timestamp(row.user.createdAt),
     }),
-  }))
+  }
 }

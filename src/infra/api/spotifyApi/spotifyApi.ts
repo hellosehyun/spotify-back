@@ -1,4 +1,4 @@
-import { dislikeTracks } from "./module/dislikeTracks"
+import { unlikeTracks } from "./module/unlikeTracks"
 import { getMyLikeTracks } from "./module/getMyLikeTracks"
 import { getProfile } from "./module/getProfile"
 import { getToken } from "./module/getToken"
@@ -31,9 +31,9 @@ export interface SpotifyApi {
     params: Parameters<typeof likeTracks>[0] //
   ): ReturnType<typeof likeTracks>
 
-  dislikeTracks(
-    params: Parameters<typeof dislikeTracks>[0] //
-  ): ReturnType<typeof dislikeTracks>
+  unlikeTracks(
+    params: Parameters<typeof unlikeTracks>[0] //
+  ): ReturnType<typeof unlikeTracks>
 }
 
 export const spotifyApi: SpotifyApi = {
@@ -43,5 +43,5 @@ export const spotifyApi: SpotifyApi = {
   getProfile,
   getMyLikeTracks,
   likeTracks,
-  dislikeTracks,
+  unlikeTracks,
 }

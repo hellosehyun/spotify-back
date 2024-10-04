@@ -1,3 +1,4 @@
+export { Idx } from "./idx"
 export { Obj } from "./obj"
 export { Track } from "./track"
 export { Cnt } from "./cnt"

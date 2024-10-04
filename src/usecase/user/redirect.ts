@@ -3,8 +3,6 @@ import { BannerImg, Country, Email, Name as UserName, Role } from "@/entity/user
 import { Cnt, Eid, Id, Img, Timestamp } from "@/shared/vo"
 import { User } from "@/entity/user/user"
 import { Playlist } from "@/entity/playlist/playlist"
-import { Item } from "@/entity/item/item"
-import { Idx } from "@/entity/item/vo"
 import { db } from "@/infra/drizzle/db"
 import { SpotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
 import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
@@ -92,25 +90,14 @@ export const redirect = (
         name: PlaylistName(`${user.name}의 좋아요 플레이리스트`),
         detail: Detail(""),
         isPublic: IsPublic(true),
-        itemCnt: Cnt(res3.data!.length),
         type: Type("like"),
+        tracks: res3.data!,
         createdAt: Timestamp(new Date()),
       })
-
-      const items = res3.data!.reverse().map((track) =>
-        Item({
-          id: Id(nanoid(20)),
-          playlistId: playlist.id,
-          eid: Eid(track.eid),
-          track,
-          createdAt: Timestamp(new Date()),
-        })
-      )
 
       await db.transaction(async (tx) => {
         userRepo.saveUser({ user: user! }, tx)
         playlistRepo.savePlaylist({ playlist }, tx)
-        playlistRepo.saveItems({ items }, tx)
       })
     }
 
