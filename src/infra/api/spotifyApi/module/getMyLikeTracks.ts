@@ -46,9 +46,12 @@ export const getMyLikeTracks = async ({ accessToken }: In): Out => {
 }
 
 const api = async (accessToken: string, limit: number, offset: number) => {
-  const res = await fetch(`https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  })
+  const res = await fetch(
+    `https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}&market=KR`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  )
   return {
     ok: res.ok,
     status: res.status,
@@ -59,7 +62,7 @@ const api = async (accessToken: string, limit: number, offset: number) => {
 const map = async (items: any) => {
   return await Promise.all(
     items.map(
-      async ({ track }: any) =>
+      async ({ track, added_at }: any) =>
         await Track({
           artists: track.artists.map((artist: any) => ({
             name: artist.name,
@@ -88,6 +91,8 @@ const map = async (items: any) => {
           },
           name: track.name,
           eid: track.id,
+          duration: track.duration_ms,
+          addedAt: added_at,
         })
     )
   )

@@ -5,11 +5,13 @@ import { oauth } from "@/usecase/user/oauth"
 import { redirect } from "@/usecase/user/redirect"
 import { NextFunction, Request, Response } from "express"
 import express from "express"
+import { auth } from "../mw/auth"
 
 export const userController = express.Router()
 
 userController.get(
   "/users/oauth", //
+  auth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = oauth().execute()
@@ -31,6 +33,7 @@ userController.get(
 
 userController.get(
   "/users/oauth/redirect", //
+  auth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await redirect(

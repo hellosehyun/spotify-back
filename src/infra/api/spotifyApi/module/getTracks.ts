@@ -12,7 +12,7 @@ type Out = Promise<{
 }>
 
 export const getTracks = async (arg: In): Out => {
-  const url = new URL("https://api.spotify.com/v1/tracks")
+  const url = new URL("https://api.spotify.com/v1/tracks?market=KR")
   url.searchParams.append("ids", arg.eids.join(","))
 
   const res = await fetch(url.toString(), {
@@ -62,6 +62,7 @@ const map = async (tracks: any) => {
           },
           name: track.name,
           eid: track.id,
+          duration: track.duration_ms,
         })
     )
   )

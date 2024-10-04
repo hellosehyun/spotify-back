@@ -1,7 +1,7 @@
 import { IsPublic, Name as PlaylistName } from "@/entity/playlist/vo"
 import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
 import { BadRequest, NotFound } from "@/shared/static/exception"
-import { Cnt, Id, Img, Page, Timestamp } from "@/shared/vo"
+import { Id, Img, Page, Timestamp } from "@/shared/vo"
 
 type In = {
   clientId: any
@@ -14,6 +14,7 @@ type Out = Promise<
     id: Id
     img: Img
     name: PlaylistName
+    isMine: boolean
     trackCnt: number
     coverImgs: Img[]
     isPublic: IsPublic
@@ -38,6 +39,7 @@ export const getUserPlaylist = (
     return entities.map(({ playlist: { type, creatorId, detail, tracks, ...restPlaylist } }) => {
       return {
         trackCnt: tracks.length,
+        isMine: dto.clientId === creatorId,
         ...restPlaylist,
       }
     })
