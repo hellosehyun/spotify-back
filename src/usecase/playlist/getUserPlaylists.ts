@@ -1,5 +1,4 @@
 import { IsPublic, Name as PlaylistName } from "@/entity/playlist/vo"
-import { BannerImg, Email, Name as UserName } from "@/entity/user/vo"
 import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
 import { BadRequest, NotFound } from "@/shared/static/exception"
 import { Cnt, Id, Img, Page, Timestamp } from "@/shared/vo"
@@ -10,16 +9,8 @@ type In = {
   page: any
 }
 
-type Out = Promise<{
-  id: Id
-  name: UserName
-  email: Email
-  img: Img
-  bannerImg: BannerImg
-  followerCnt: Cnt
-  isMe: boolean
-  createdAt: Timestamp
-  collections: {
+type Out = Promise<
+  {
     id: Id
     img: Img
     name: PlaylistName
@@ -28,7 +19,7 @@ type Out = Promise<{
     itemCnt: Cnt
     createdAt: Timestamp
   }[]
-}>
+>
 
 export const getUserPlaylist = (
   playlistRepo: PlaylistRepo //
@@ -44,24 +35,9 @@ export const getUserPlaylist = (
 
     if (entities === undefined) throw new NotFound()
 
-    const { eid, role, country, ...restCreator } = entities[0].creator
-
-    return {
-      ...restCreator,
-      isMe: restCreator.id === dto.clientId,
-      collections: entities.map(({ playlist }) => {
-        const { type, name, creatorId, detail, ...restPlaylist } = playlist
-
-        if (playlist.type === "like") {
-          return {
-            name: PlaylistName(`${restCreator.name}의 좋아요 플레이리스트`),
-            ...restPlaylist,
-          }
-        } else {
-          return { name, ...restPlaylist }
-        }
-      }),
-    }
+    return entities.map(
+      ({ playlist: { type, creatorId, detail, ...restPlaylist } }) => restPlaylist
+    )
   },
 })
 

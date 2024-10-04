@@ -56,8 +56,9 @@ export const getPlaylist = (
         img: entity.creator.img,
       },
       isMine: entity.creator.id === dto.clientId,
-      items: entity.items.map(({ createdAt, eid, id, ...rest }) => ({
-        ...rest,
+      items: entity.items.map(({ createdAt, idx, track }) => ({
+        idx: idx!,
+        track,
         addedAt: createdAt,
       })),
     }

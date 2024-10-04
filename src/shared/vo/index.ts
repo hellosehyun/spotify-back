@@ -1,3 +1,4 @@
+export { Obj } from "./obj"
 export { Track } from "./track"
 export { Cnt } from "./cnt"
 export { Img } from "./img"

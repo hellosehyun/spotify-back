@@ -1,60 +1,47 @@
-import sharp from "sharp";
-import { nanoid } from "nanoid";
+import sharp from "sharp"
+import p from "path"
+import { nanoid } from "nanoid"
+import { Img, Obj } from "../vo"
 
-interface Options {
-  sizes?: { width: number; height: number }[];
-  quality?: number;
-  path: string;
+type Opts = {
+  sizes?: [number, number][]
+  quality?: number
+  path: string
 }
 
-export type VarisizeOut = {
-  images: {
-    width: number;
-    height: number;
-    url: string;
-  }[];
-  objects: {
-    key: string;
-    buffer: Buffer;
-  }[];
-};
+type Out = {
+  img: Img
+  objs: Obj[]
+}
 
-export async function varisize(
-  buffer: Buffer,
-  options: Options
-): Promise<VarisizeOut> {
-  const defaultSizes = [
-    { width: 640, height: 640 },
-    { width: 300, height: 300 },
-    { width: 64, height: 64 },
-  ];
-  const defaultQuality = 80;
+export const varisize = async (buffer: Buffer, opts: Opts): Promise<Out> => {
+  const {
+    sizes = [
+      [64, 64],
+      [300, 300],
+      [640, 640],
+    ],
+    quality = 80,
+    path,
+  } = opts
 
-  const { sizes = defaultSizes, quality = defaultQuality, path } = options;
+  const results = await Promise.all(
+    sizes.map(async ([width, height]) => {
+      const key = p.join(path, `${nanoid(20)}.webp`)
+      const url = `${process.env.BUCKET_BASE_URL}/${key}`
+      const resized = await sharp(buffer)
+        .resize({ width, height, withoutEnlargement: true })
+        .webp({ quality })
+        .toBuffer()
 
-  try {
-    const results = await Promise.all(
-      sizes.map(async ({ width, height }) => {
-        const name = `${nanoid(20)}.webp`;
-        const key = `${path}/${name}`;
-        const url = `${process.env.BUCKET_BASE_URL}/${key}`;
-        const resized = await sharp(buffer) //
-          .resize({ width, height, withoutEnlargement: true })
-          .webp({ quality })
-          .toBuffer();
+      return { width, height, url, key, buffer: resized }
+    })
+  )
 
-        return {
-          image: { width, height, url },
-          object: { buffer: resized, key },
-        };
-      })
-    );
-
-    const images = results.map((result) => result.image);
-    const objects = results.map((result) => result.object);
-
-    return { images, objects };
-  } catch (error) {
-    throw error;
+  return {
+    img: Img(
+      Object.fromEntries(results.map(({ width, height, url }, i) => [i, { width, height, url }]))
+    ),
+    objs: results.map(({ key, buffer }) => Obj({ key, buffer })),
   }
 }

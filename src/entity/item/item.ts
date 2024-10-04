@@ -5,11 +5,11 @@ export type Item = {
   id: Id
   playlistId: Id
   eid: Eid
-  idx: Idx
+  idx?: Idx
   track: Track
   createdAt: Timestamp
 }
 
-export const Item = <T>(val: Item): Item => {
+export const Item = (val: Item): Item => {
   return val as Item
 }

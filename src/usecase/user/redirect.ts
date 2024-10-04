@@ -89,7 +89,7 @@ export const redirect = (
         creatorId: user.id,
         img: Img({}),
         coverImgs: [],
-        name: PlaylistName("졸아요 표시한 곡"),
+        name: PlaylistName(`${user.name}의 좋아요 플레이리스트`),
         detail: Detail(""),
         isPublic: IsPublic(true),
         itemCnt: Cnt(res3.data!.length),
@@ -97,11 +97,10 @@ export const redirect = (
         createdAt: Timestamp(new Date()),
       })
 
-      const items = res3.data!.reverse().map((track, i) =>
+      const items = res3.data!.reverse().map((track) =>
         Item({
           id: Id(nanoid(20)),
           playlistId: playlist.id,
-          idx: Idx(i),
           eid: Eid(track.eid),
           track,
           createdAt: Timestamp(new Date()),

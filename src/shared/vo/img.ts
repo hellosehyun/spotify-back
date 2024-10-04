@@ -1,4 +1,12 @@
-export type Img = object & { __brand: symbol }
+export type Img = {
+  [key: number]: {
+    width: number
+    height: number
+    url: string
+  }
+} & {
+  __brand: symbol
+}
 
 export const Img = (val: any): Img => {
   return val as Img
