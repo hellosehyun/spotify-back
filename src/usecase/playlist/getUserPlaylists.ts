@@ -36,13 +36,18 @@ export const getUserPlaylist = (
 
     if (entities === undefined) throw new NotFound()
 
-    return entities.map(({ playlist: { type, creatorId, detail, tracks, ...restPlaylist } }) => {
-      return {
-        trackCnt: tracks.length,
-        isMine: dto.clientId === creatorId,
-        ...restPlaylist,
-      }
-    })
+    return await Promise.all(
+      entities.map(
+        async ({ playlist: { type, creatorId, detail, tracks, coverImgs, ...restPlaylist } }) => {
+          return {
+            coverImgs: await pickRandom(coverImgs),
+            trackCnt: tracks.length,
+            isMine: dto.clientId === creatorId,
+            ...restPlaylist,
+          }
+        }
+      )
+    )
   },
 })
 
@@ -57,3 +62,16 @@ const pre = (arg: In) => {
     throw new BadRequest()
   }
 }
+
+const pickRandom = async (arr: any[], amount = 4) =>
+  new Promise<Img[]>((resolve) => {
+    const length = Math.min(amount, arr.length)
+    const result = new Set<any>()
+
+    while (result.size < length) {
+      const randomItem = arr[Math.floor(Math.random() * arr.length)]
+      result.add(randomItem)
+    }
+
+    resolve(Array.from(result))
+  })

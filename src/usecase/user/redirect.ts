@@ -1,6 +1,6 @@
 import { Detail, IsPublic, Name as PlaylistName, Type } from "@/entity/playlist/vo"
 import { BannerImg, Country, Email, Name as UserName, Role } from "@/entity/user/vo"
-import { Cnt, Eid, Id, Img, Timestamp } from "@/shared/vo"
+import { Cnt, Eid, Id, Img, Timestamp, Track } from "@/shared/vo"
 import { User } from "@/entity/user/user"
 import { Playlist } from "@/entity/playlist/playlist"
 import { db } from "@/infra/drizzle/db"
@@ -82,16 +82,19 @@ export const redirect = (
         createdAt: Timestamp(new Date()),
       })
 
+      const tracks = res3.data!
+      const coverImgs = uniqueAlbumImgs(tracks)
+
       const playlist = Playlist({
         id: Id(nanoid(20)),
         creatorId: user.id,
         img: Img({}),
-        coverImgs: [],
+        coverImgs,
         name: PlaylistName(`${user.name}의 좋아요 플레이리스트`),
         detail: Detail(""),
         isPublic: IsPublic(true),
         type: Type("like"),
-        tracks: res3.data!,
+        tracks,
         createdAt: Timestamp(new Date()),
       })
 
@@ -134,4 +137,8 @@ const pre = (arg: In) => {
   } catch (err) {
     throw new BadRequest()
   }
+}
+
+const uniqueAlbumImgs = (tracks: Track[]) => {
+  return [...new Map(tracks.map((t) => [t.album.eid, t.album.img])).values()]
 }

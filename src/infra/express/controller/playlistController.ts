@@ -60,8 +60,6 @@ playlistController.post(
         playlistRepo, //
         spotifyApi
       ).execute({
-        name: req.body?.name,
-        img: req.body?.img,
         eids: req.body?.eids,
         clientId: req.client?.id,
         accessToken: req.client?.accessToken,

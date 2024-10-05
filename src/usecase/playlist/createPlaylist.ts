@@ -1,18 +1,14 @@
 import { Playlist } from "@/entity/playlist/playlist"
 import { Detail, IsPublic, Name, Type } from "@/entity/playlist/vo"
 import { SpotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
-import { db } from "@/infra/drizzle/db"
 import { PlaylistRepo } from "@/repo/playlist/playlistRepo"
-import { varisize } from "@/shared/helper/varisize"
 import { BadGateway, BadRequest } from "@/shared/static/exception"
-import { Cnt, Eid, Id, Img, Timestamp } from "@/shared/vo"
+import { Eid, Id, Img, Timestamp, Track } from "@/shared/vo"
 import { nanoid } from "nanoid"
 
 type In = {
   clientId: any
-  name: any
   accessToken: any
-  img: any
   eids: any[]
 }
 
@@ -34,13 +30,14 @@ export const createPlaylist = (
     if (!res.ok) throw new BadGateway()
 
     const tracks = res.data!
+    const coverImgs = uniqueAlbumImgs(tracks)
 
     const playlist = Playlist({
       id: Id(nanoid(20)),
       creatorId: dto.clientId,
-      img: dto.img,
-      coverImgs: [],
-      name: dto.name,
+      img: Img({}),
+      coverImgs,
+      name: Name(""),
       detail: Detail(""),
       isPublic: IsPublic(true),
       tracks,
@@ -63,12 +60,14 @@ const pre = async (arg: In) => {
   try {
     return {
       clientId: Id(arg.clientId!),
-      name: Name(arg.name!),
       accessToken: arg.accessToken!,
       eids: arg.eids!.map((eid) => Eid(eid)),
-      ...(await varisize(arg.img!, { path: `${arg.clientId}/playlist` })),
     }
   } catch (err) {
     throw new BadRequest()
   }
+}
+
+const uniqueAlbumImgs = (tracks: Track[]) => {
+  return [...new Map(tracks.map((t) => [t.album.eid, t.album.img])).values()]
 }
