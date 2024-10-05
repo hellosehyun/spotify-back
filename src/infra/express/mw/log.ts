@@ -6,12 +6,11 @@ import moment from "moment-timezone"
 
 const header = [
   { id: "status", title: "Status" },
-  { id: "createdAt", title: "Created At (Seoul)" },
+  { id: "createdAt", title: "Created At" },
   { id: "method", title: "Method" },
   { id: "url", title: "URL" },
   { id: "latency", title: "Latency" },
   { id: "userId", title: "User Id" },
-  { id: "body", title: "Request Body" },
 ]
 
 export const log = async (req: Request, res: Response, next: NextFunction) => {
@@ -26,12 +25,11 @@ export const log = async (req: Request, res: Response, next: NextFunction) => {
 
       const row = {
         status: res.statusCode,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         latency: `${latency} ms`,
         url: req.url,
         method: req.method,
         userId: req.client?.id,
-        body: JSON.stringify(req.body),
       }
 
       const status = res.statusCode.toString()

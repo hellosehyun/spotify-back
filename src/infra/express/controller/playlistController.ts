@@ -7,6 +7,7 @@ import { getUserPlaylist } from "@/usecase/playlist/getUserPlaylists"
 import { createPlaylist } from "@/usecase/playlist/createPlaylist"
 import { spotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
 import { fileparse } from "../mw/fileparse"
+import { reorderPlaylist } from "@/usecase/playlist/reorderPlaylist"
 
 export const playlistController = express.Router()
 
@@ -64,6 +65,28 @@ playlistController.post(
         eids: req.body?.eids,
         clientId: req.client?.id,
         accessToken: req.client?.accessToken,
+      })
+
+      return res.status(200).json(result)
+    } catch (err) {
+      return next(err)
+    }
+  }
+)
+
+playlistController.put(
+  "/playlists/:id/order", //
+  auth,
+  fileparse(),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await reorderPlaylist(
+        playlistRepo //
+      ).execute({
+        playlistId: req.params?.id,
+        clientId: req.client?.id,
+        idxs: req.body?.idxs,
+        pos: req.body?.pos,
       })
 
       return res.status(200).json(result)
