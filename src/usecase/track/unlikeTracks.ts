@@ -17,7 +17,10 @@ export const unlikeTracks = (
   execute: async (arg: In): Out => {
     const dto = pre(arg)
 
-    const playlist = await playlistRepo.findPlaylist({ userId: dto.clientId, type: Type("like") })
+    const playlist = await playlistRepo.findPlaylist({
+      creatorId: dto.clientId,
+      type: Type("like"),
+    })
     if (playlist === undefined) throw new BadRequest()
 
     await playlistRepo.updatePlaylist({
@@ -32,9 +35,9 @@ export const unlikeTracks = (
 const pre = (arg: In) => {
   try {
     return {
-      clientId: Id(arg.clientId!),
+      clientId: Id(arg.clientId),
       accessToken: arg.accessToken!,
-      idxs: arg.idxs!.map((idx) => Idx(idx)),
+      idxs: arg.idxs.map((idx) => Idx(idx)),
     }
   } catch (err) {
     throw new BadRequest()

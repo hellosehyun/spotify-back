@@ -33,7 +33,7 @@ export const getPlaylist = (
   execute: async (arg: In): Out => {
     const dto = pre(arg)
 
-    const entity = await playlistRepo.findPlaylistOverview({
+    const entity = await playlistRepo.findFullPlaylist({
       clientId: dto.clientId,
       playlistId: dto.playlistId,
     })

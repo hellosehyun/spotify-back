@@ -21,7 +21,7 @@ type Out = Promise<
   | undefined
 >
 
-export const findPlaylists = async (arg: In, tx = db): Out => {
+export const findFullPlaylists = async (arg: In, tx = db): Out => {
   const limit = 50
 
   const q = tx

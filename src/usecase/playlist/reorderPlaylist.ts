@@ -18,7 +18,10 @@ export const reorderPlaylist = (
   execute: async (arg: In): Out => {
     const dto = await pre(arg)
 
-    const playlist = await playlistRepo.findPlaylist({ userId: dto.clientId, type: Type("like") })
+    const playlist = await playlistRepo.findPlaylist({
+      creatorId: dto.clientId,
+      type: Type("like"),
+    })
     if (playlist === undefined) throw new BadRequest()
 
     await playlistRepo.updatePlaylist({
@@ -33,10 +36,10 @@ export const reorderPlaylist = (
 const pre = async (arg: In) => {
   try {
     return {
-      clientId: Id(arg.clientId!),
-      playlistId: Id(arg.playlistId!),
-      idxs: arg.idxs!.map((idx) => Idx(idx)),
-      pos: Idx(arg.pos!),
+      clientId: Id(arg.clientId),
+      playlistId: Id(arg.playlistId),
+      idxs: arg.idxs.map((idx) => Idx(idx)),
+      pos: Idx(arg.pos),
     }
   } catch (err) {
     throw new BadRequest()

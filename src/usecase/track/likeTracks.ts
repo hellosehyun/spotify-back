@@ -24,7 +24,10 @@ export const likeTracks = (
 
     const tracks = res1.data!.map((track) => ({ ...track, addedAt: Timestamp(new Date()) }))
 
-    const playlist = await playlistRepo.findPlaylist({ userId: dto.clientId, type: Type("like") })
+    const playlist = await playlistRepo.findPlaylist({
+      creatorId: dto.clientId,
+      type: Type("like"),
+    })
     if (playlist === undefined) throw new BadRequest()
 
     await playlistRepo.updatePlaylist({
@@ -39,9 +42,9 @@ export const likeTracks = (
 const pre = async (arg: In) => {
   try {
     return {
-      clientId: Id(arg.clientId!),
-      accessToken: arg.accessToken!,
-      eids: arg.eids!.map((eid) => Eid(eid)),
+      clientId: Id(arg.clientId),
+      accessToken: arg.accessToken,
+      eids: arg.eids.map((eid) => Eid(eid)),
     }
   } catch (err) {
     throw new BadRequest()

@@ -59,9 +59,9 @@ export const createPlaylist = (
 const pre = async (arg: In) => {
   try {
     return {
-      clientId: Id(arg.clientId!),
-      accessToken: arg.accessToken!,
-      eids: arg.eids!.map((eid) => Eid(eid)),
+      clientId: Id(arg.clientId),
+      accessToken: arg.accessToken,
+      eids: arg.eids.map((eid) => Eid(eid)),
     }
   } catch (err) {
     throw new BadRequest()

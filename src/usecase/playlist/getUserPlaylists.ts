@@ -28,7 +28,7 @@ export const getUserPlaylist = (
   execute: async (arg: In): Out => {
     const dto = pre(arg)
 
-    const entities = await playlistRepo.findPlaylists({
+    const entities = await playlistRepo.findFullPlaylists({
       clientId: dto.clientId,
       page: dto.page,
       creatorId: dto.creatorId,
@@ -63,7 +63,7 @@ const pre = (arg: In) => {
   }
 }
 
-const pickRandom = async (arr: any[], amount = 4) =>
+const pickRandom = async (arr: any[], amount = 3) =>
   new Promise<Img[]>((resolve) => {
     const length = Math.min(amount, arr.length)
     const result = new Set<any>()

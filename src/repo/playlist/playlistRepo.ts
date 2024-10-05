@@ -1,19 +1,20 @@
-import { findPlaylists } from "./module/findPlaylists"
+import { findFullPlaylists } from "./module/findFullPlaylists"
 import { findPlaylist } from "./module/findPlaylist"
 import { savePlaylist } from "./module/savePlaylist"
 import { updatePlaylist } from "./module/updatePlaylist"
-import { findPlaylistOverview } from "./module/findPlaylistOverview"
+import { findFullPlaylist } from "./module/findFullPlaylist"
+import { deletePlaylist } from "./module/deletePlaylist"
 
 export type PlaylistRepo = {
-  findPlaylistOverview(
-    arg: Parameters<typeof findPlaylistOverview>[0],
-    tx?: Parameters<typeof findPlaylistOverview>[1]
-  ): ReturnType<typeof findPlaylistOverview>
+  findFullPlaylist(
+    arg: Parameters<typeof findFullPlaylist>[0],
+    tx?: Parameters<typeof findFullPlaylist>[1]
+  ): ReturnType<typeof findFullPlaylist>
 
-  findPlaylists(
-    arg: Parameters<typeof findPlaylists>[0],
-    tx?: Parameters<typeof findPlaylists>[1]
-  ): ReturnType<typeof findPlaylists>
+  findFullPlaylists(
+    arg: Parameters<typeof findFullPlaylists>[0],
+    tx?: Parameters<typeof findFullPlaylists>[1]
+  ): ReturnType<typeof findFullPlaylists>
 
   savePlaylist(
     arg: Parameters<typeof savePlaylist>[0],
@@ -29,12 +30,18 @@ export type PlaylistRepo = {
     arg: Parameters<typeof findPlaylist>[0],
     tx?: Parameters<typeof findPlaylist>[1]
   ): ReturnType<typeof findPlaylist>
+
+  deletePlaylist(
+    arg: Parameters<typeof deletePlaylist>[0],
+    tx?: Parameters<typeof deletePlaylist>[1]
+  ): ReturnType<typeof deletePlaylist>
 }
 
 export const playlistRepo: PlaylistRepo = {
-  findPlaylistOverview,
+  findFullPlaylist,
   findPlaylist,
-  findPlaylists,
+  findFullPlaylists,
   savePlaylist,
   updatePlaylist,
+  deletePlaylist,
 }

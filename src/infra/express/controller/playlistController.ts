@@ -8,6 +8,7 @@ import { createPlaylist } from "@/usecase/playlist/createPlaylist"
 import { spotifyApi } from "@/infra/api/spotifyApi/spotifyApi"
 import { fileparse } from "../mw/fileparse"
 import { reorderPlaylist } from "@/usecase/playlist/reorderPlaylist"
+import { deletePlaylist } from "@/usecase/playlist/deletePlaylist"
 
 export const playlistController = express.Router()
 
@@ -85,6 +86,25 @@ playlistController.put(
         clientId: req.client?.id,
         idxs: req.body?.idxs,
         pos: req.body?.pos,
+      })
+
+      return res.status(200).json(result)
+    } catch (err) {
+      return next(err)
+    }
+  }
+)
+
+playlistController.delete(
+  "/playlists/:id", //
+  auth,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await deletePlaylist(
+        playlistRepo //
+      ).execute({
+        clientId: req.client?.id,
+        playlistId: req.params.id,
       })
 
       return res.status(200).json(result)

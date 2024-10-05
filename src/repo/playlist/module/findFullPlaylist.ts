@@ -19,7 +19,7 @@ type Out = Promise<
   | undefined
 >
 
-export const findPlaylistOverview = async (arg: In, tx = db): Out => {
+export const findFullPlaylist = async (arg: In, tx = db): Out => {
   const q = tx
     .select()
     .from(playlist)

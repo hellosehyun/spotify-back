@@ -6,7 +6,7 @@ import { Id, Img, Timestamp, Track } from "@/shared/vo"
 import { and, eq, isNull } from "drizzle-orm"
 
 type In = {
-  userId?: Id
+  creatorId?: Id
   playlistId?: Id
   type?: Type
 }
@@ -17,7 +17,7 @@ export const findPlaylist = async (arg: In, tx = db): Out => {
 
   const cond = [isNull(playlist.deletedAt)]
   if (arg.playlistId !== undefined) cond.push(eq(playlist.id, arg.playlistId))
-  if (arg.userId !== undefined) cond.push(eq(playlist.creatorId, arg.userId))
+  if (arg.creatorId !== undefined) cond.push(eq(playlist.creatorId, arg.creatorId))
   if (arg.type !== undefined) cond.push(eq(playlist.type, arg.type))
 
   q.where(and(...cond))
